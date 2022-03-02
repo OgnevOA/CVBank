@@ -35,7 +35,9 @@ public class EmployeeAccountingController {
 
 	@PostMapping("/login")
 	public InfoEmployeeDto loginEmployee(@RequestHeader("Authorization") String token) {
+		System.out.println(token);
 		String login = decodeBasicToken(token);
+		System.out.println(login);
 		return employeeAccountService.getEmployee(login);
 	}
 
@@ -57,7 +59,7 @@ public class EmployeeAccountingController {
 	
 	private String decodeBasicToken(String token) {
 		String credentials = token.split(" ")[1];
-		byte[] login = Base64.getDecoder().decode(credentials.split(":")[0]);
-		return new String(login);
+		byte[] login = Base64.getDecoder().decode(credentials);
+		return new String(login).split(":")[0];
 	}
 }
