@@ -35,9 +35,7 @@ public class EmployeeAccountingController {
 
 	@PostMapping("/login")
 	public InfoEmployeeDto loginEmployee(@RequestHeader("Authorization") String token) {
-		System.out.println(token);
 		String login = decodeBasicToken(token);
-		System.out.println(login);
 		return employeeAccountService.getEmployee(login);
 	}
 
