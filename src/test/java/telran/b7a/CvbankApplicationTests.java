@@ -43,8 +43,7 @@ class CvbankApplicationTests {
 
 	@BeforeEach
 	void setUp() throws Exception {
-		testNewEmployerDto = new NewEmployerDto(testApplicant, testCompany, testPassword);
-		employerTestDto = new EmployerDto(testApplicant, testCompany, cvCollectionTest);
+
 	}
 
 	@Test

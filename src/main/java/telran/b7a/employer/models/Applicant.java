@@ -1,7 +1,5 @@
 package telran.b7a.employer.models;
 
-import org.springframework.data.annotation.Id;
-
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -16,7 +14,6 @@ import lombok.Setter;
 public class Applicant  {
 	
 
-	@Id
 	String email;
 	String firstName;
 	String lastName;

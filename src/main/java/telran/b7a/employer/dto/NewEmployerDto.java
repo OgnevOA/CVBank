@@ -13,6 +13,7 @@ import lombok.ToString;
 @ToString
 public class NewEmployerDto {
 	
+	String id;
 	ApplicantDto applicantInfo;
 	CompanyDto companyInfo;
 	String password;

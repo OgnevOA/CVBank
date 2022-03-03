@@ -52,5 +52,5 @@ public class EmployerController {
 	public void removeEmployer(@PathVariable String companyId) {
 		employerService.removeEmployer(companyId);
 	}
-
+	
 }
