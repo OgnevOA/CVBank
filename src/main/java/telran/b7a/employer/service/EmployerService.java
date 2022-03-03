@@ -1,5 +1,6 @@
 package telran.b7a.employer.service;
 
+import telran.b7a.employer.dto.AddCVDto;
 import telran.b7a.employer.dto.EmployerDto;
 import telran.b7a.employer.dto.NewEmployerDto;
 import telran.b7a.employer.dto.UpdateEmployerDto;
@@ -12,7 +13,11 @@ public interface EmployerService {
 	
 	EmployerDto getEmployer(String companyName);
 	
-	EmployerDto updateEmployer(String email, UpdateEmployerDto newCredentials);
+	EmployerDto updateEmployer(String employerId, UpdateEmployerDto newCredentials);
 	
-	void removeEmployer(String email);
+	AddCVDto addCVCollection(String employerId, String collectionName);
+	
+	AddCVDto addCVtoCollection(String employerId, String collectionName, String cvId);
+	
+	void removeEmployer(String employerId);
 }
