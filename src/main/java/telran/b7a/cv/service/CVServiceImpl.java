@@ -63,20 +63,24 @@ public class CVServiceImpl implements CVService {
 	}
 
 	private CVDto setNull(CVDto response, String field) {
-		switch (field) {
-		case "Name and last name":
+		if (field.equalsIgnoreCase("Name and last name")) {
 			response.setFirstName(null);
 			response.setLastName(null);
 			return response;
-		case "phone":
+		}
+		if (field.equalsIgnoreCase("phone")) {
 			response.setPhone(null);
-		case "links":
-			response.setLinks(null);
-		case "experience":
-			response.setExperience(null);
-		default:
 			return response;
 		}
+		if (field.equalsIgnoreCase("links")) {
+			response.setLinks(null);
+			return response;
+		}
+		if (field.equalsIgnoreCase("experience")) {
+			response.setExperience(null);
+			return response;
+		}
+		return response;
 
 	}
 
