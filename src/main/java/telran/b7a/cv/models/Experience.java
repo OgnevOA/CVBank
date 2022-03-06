@@ -1,4 +1,6 @@
-package telran.b7a.employer.models;
+package telran.b7a.cv.models;
+
+import java.util.Set;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,13 +11,12 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Applicant  {
-	
+public class Experience {
 
-	String email;
-	String firstName;
-	String lastName;
-	String position;
-	String phone;
+	String date;
+	String company;
+	String website;
+	String address;
+	Set<Project> projects;
 
 }

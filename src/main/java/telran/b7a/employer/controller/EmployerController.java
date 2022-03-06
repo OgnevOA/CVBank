@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import telran.b7a.employer.dto.AddCVDto;
 import telran.b7a.employer.dto.EmployerDto;
 import telran.b7a.employer.dto.NewEmployerDto;
 import telran.b7a.employer.dto.UpdateEmployerDto;
@@ -43,14 +44,25 @@ public class EmployerController {
 		return employerService.getEmployer(companyName);
 	}
 
-	@PutMapping("/{companyId}")
-	public EmployerDto updateEmployer(@PathVariable String companyId, @RequestBody UpdateEmployerDto newCredentials) {
-		return employerService.updateEmployer(companyId, newCredentials);
+	@PutMapping("/{employerId}")
+	public EmployerDto updateEmployer(@PathVariable String employerId, @RequestBody UpdateEmployerDto newCredentials) {
+		return employerService.updateEmployer(employerId, newCredentials);
 	}
-	
-	@DeleteMapping("/{companyId}")
-	public void removeEmployer(@PathVariable String companyId) {
-		employerService.removeEmployer(companyId);
+
+	@DeleteMapping("/{employerId}")
+	public void removeEmployer(@PathVariable String employerId) {
+		employerService.removeEmployer(employerId);
+	}
+
+	@PutMapping("/{employerId}/collection/{collectionName}")
+	public AddCVDto addCvCollection(@PathVariable String employerId, @PathVariable String collectionName) {
+		return employerService.addCVCollection(employerId, collectionName);
+	}
+
+	@PutMapping("/{employerId}/collection/{collectionName}/{cvId}")
+	public AddCVDto addCvToCollection(@PathVariable String employerId, @PathVariable String collectionName,
+			@PathVariable String cvId) {
+		return employerService.addCVtoCollection(employerId, collectionName, cvId);
 	}
 
 }
