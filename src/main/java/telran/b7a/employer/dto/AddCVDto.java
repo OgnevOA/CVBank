@@ -14,11 +14,9 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class EmployerDto {
+public class AddCVDto {
 	
-	String id;
-	ApplicantDto applicantInfo;
-	CompanyDto companyInfo;
+	String login;
 	Map<String, Set<String>> cvCollections;
 
 }

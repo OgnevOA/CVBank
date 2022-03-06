@@ -1,6 +1,7 @@
 package telran.b7a.employer.service;
 
 import java.util.Base64;
+import java.util.HashSet;
 import java.util.Optional;
 
 import org.mindrot.jbcrypt.BCrypt;
@@ -8,7 +9,11 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import telran.b7a.cv.dao.CVRepository;
+import telran.b7a.cv.exceptions.CVNotFoundException;
+import telran.b7a.cv.models.CV;
 import telran.b7a.employer.dao.EmployerMongoRepository;
+import telran.b7a.employer.dto.AddCVDto;
 import telran.b7a.employer.dto.EmployerDto;
 import telran.b7a.employer.dto.NewEmployerDto;
 import telran.b7a.employer.dto.UpdateEmployerDto;
@@ -22,12 +27,15 @@ import telran.b7a.employer.models.Employer;
 public class EmployerServiceImpl implements EmployerService {
 
 	EmployerMongoRepository employersRepository;
+	CVRepository cvRepository;
 	ModelMapper modelMapper;
 
 	@Autowired
-	public EmployerServiceImpl(EmployerMongoRepository employerMongoRepository, ModelMapper modelMapper) {
+	public EmployerServiceImpl(EmployerMongoRepository employerMongoRepository, ModelMapper modelMapper,
+			CVRepository cvRepository) {
 		this.employersRepository = employerMongoRepository;
 		this.modelMapper = modelMapper;
+		this.cvRepository = cvRepository;
 	}
 
 	@Override
@@ -64,11 +72,9 @@ public class EmployerServiceImpl implements EmployerService {
 	}
 
 	@Override
-	public EmployerDto updateEmployer(String email, UpdateEmployerDto newCredentials) {
-		Employer employer = employersRepository.findByApplicantInfoEmailIgnoreCase(email);
-		if (employer == null) {
-			throw new EmployerNotFoundException();
-		}
+	public EmployerDto updateEmployer(String employerId, UpdateEmployerDto newCredentials) {
+		Employer employer = employersRepository.findById(employerId).orElseThrow(() -> new EmployerNotFoundException());
+		String email = employer.getApplicantInfo().getEmail();
 		Applicant applicantInfo = modelMapper.map(newCredentials.getApplicantInfo(), Applicant.class);
 		Company companyInfo = modelMapper.map(newCredentials.getCompanyInfo(), Company.class);
 		employer.setApplicantInfo(applicantInfo);
@@ -79,11 +85,8 @@ public class EmployerServiceImpl implements EmployerService {
 	}
 
 	@Override
-	public void removeEmployer(String email) {
-		Employer employer = employersRepository.findByApplicantInfoEmailIgnoreCase(email);
-		if (employer == null) {
-			throw new EmployerNotFoundException();
-		}
+	public void removeEmployer(String employerId) {
+		Employer employer = employersRepository.findById(employerId).orElseThrow(() -> new EmployerNotFoundException());
 		employersRepository.delete(employer);
 	}
 
@@ -100,6 +103,29 @@ public class EmployerServiceImpl implements EmployerService {
 
 		}
 		return Optional.ofNullable(login);
+	}
+
+	@Override
+	public AddCVDto addCVCollection(String employerId, String collectionName) {
+		Employer employer = employersRepository.findById(employerId).orElseThrow(() -> new EmployerNotFoundException());
+		String login = employer.getApplicantInfo().getEmail();
+		employer.getCvCollections().put(collectionName, new HashSet<>());
+		employersRepository.save(employer);
+		AddCVDto res = modelMapper.map(employer, AddCVDto.class);
+		res.setLogin(login);
+		return res;
+	}
+
+	@Override
+	public AddCVDto addCVtoCollection(String employerId, String collectionName, String cvId) {
+		CV cv = cvRepository.findById(cvId).orElseThrow(() -> new CVNotFoundException());
+		Employer employer = employersRepository.findById(employerId).orElseThrow(() -> new EmployerNotFoundException());
+		String login = employer.getApplicantInfo().getEmail();
+		employer.getCvCollections().get(collectionName).add(cv.getCvId());
+		employersRepository.save(employer);
+		AddCVDto res = modelMapper.map(employer, AddCVDto.class);
+		res.setLogin(login);
+		return res;
 	}
 
 }

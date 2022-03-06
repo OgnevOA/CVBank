@@ -1,21 +1,18 @@
-package telran.b7a.employer.dto;
+package telran.b7a.cv.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@Setter
 @ToString
-public class NewEmployerDto {
+public class EducationDto {
 	
-	String id;
-	ApplicantDto applicantInfo;
-	CompanyDto companyInfo;
-	String password;
+	String date;
+	String place;
+	String degree;
 
 }

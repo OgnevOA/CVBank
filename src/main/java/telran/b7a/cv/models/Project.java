@@ -1,4 +1,4 @@
-package telran.b7a.employer.models;
+package telran.b7a.cv.models;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,13 +9,9 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Applicant  {
+public class Project {
 	
-
-	String email;
-	String firstName;
-	String lastName;
-	String position;
-	String phone;
+	String project;
+	String technologies;
 
 }
