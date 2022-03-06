@@ -1,5 +1,6 @@
 package telran.b7a.cv.models;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -19,7 +20,7 @@ import lombok.Setter;
 @Document(collection = "CV")
 @EqualsAndHashCode(of = "cvId")
 public class CV {
-	
+
 	@Id
 	String cvId;
 	String firstName;
@@ -33,5 +34,6 @@ public class CV {
 	List<Experience> experience;
 	Other other;
 	Set<String> links;
+	Set<String> hideFields = new HashSet<>();
 
 }

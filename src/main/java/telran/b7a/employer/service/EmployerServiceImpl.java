@@ -73,7 +73,7 @@ public class EmployerServiceImpl implements EmployerService {
 
 	@Override
 	public EmployerDto updateEmployer(String employerId, UpdateEmployerDto newCredentials) {
-		Employer employer = employersRepository.findById(employerId).orElseThrow(() -> new EmployerNotFoundException());
+		Employer employer = findEmployerById(employerId);
 		String email = employer.getApplicantInfo().getEmail();
 		Applicant applicantInfo = modelMapper.map(newCredentials.getApplicantInfo(), Applicant.class);
 		Company companyInfo = modelMapper.map(newCredentials.getCompanyInfo(), Company.class);
@@ -86,8 +86,35 @@ public class EmployerServiceImpl implements EmployerService {
 
 	@Override
 	public void removeEmployer(String employerId) {
-		Employer employer = employersRepository.findById(employerId).orElseThrow(() -> new EmployerNotFoundException());
+		Employer employer = findEmployerById(employerId);
 		employersRepository.delete(employer);
+	}
+
+	@Override
+	public AddCVDto addCVCollection(String employerId, String collectionName) {
+		Employer employer = findEmployerById(employerId);
+		String login = employer.getApplicantInfo().getEmail();
+		employer.getCvCollections().put(collectionName, new HashSet<>());
+		employersRepository.save(employer);
+		AddCVDto res = modelMapper.map(employer, AddCVDto.class);
+		res.setLogin(login);
+		return res;
+	}
+
+	@Override
+	public AddCVDto addCVtoCollection(String employerId, String collectionName, String cvId) {
+		CV cv = cvRepository.findById(cvId).orElseThrow(() -> new CVNotFoundException());
+		Employer employer = findEmployerById(employerId);
+		String login = employer.getApplicantInfo().getEmail();
+		employer.getCvCollections().get(collectionName).add(cv.getCvId());
+		employersRepository.save(employer);
+		AddCVDto res = modelMapper.map(employer, AddCVDto.class);
+		res.setLogin(login);
+		return res;
+	}
+
+	private Employer findEmployerById(String employerId) {
+		return employersRepository.findById(employerId).orElseThrow(() -> new EmployerNotFoundException());
 	}
 
 	private Optional<String> getLogin(String token) {
@@ -103,29 +130,6 @@ public class EmployerServiceImpl implements EmployerService {
 
 		}
 		return Optional.ofNullable(login);
-	}
-
-	@Override
-	public AddCVDto addCVCollection(String employerId, String collectionName) {
-		Employer employer = employersRepository.findById(employerId).orElseThrow(() -> new EmployerNotFoundException());
-		String login = employer.getApplicantInfo().getEmail();
-		employer.getCvCollections().put(collectionName, new HashSet<>());
-		employersRepository.save(employer);
-		AddCVDto res = modelMapper.map(employer, AddCVDto.class);
-		res.setLogin(login);
-		return res;
-	}
-
-	@Override
-	public AddCVDto addCVtoCollection(String employerId, String collectionName, String cvId) {
-		CV cv = cvRepository.findById(cvId).orElseThrow(() -> new CVNotFoundException());
-		Employer employer = employersRepository.findById(employerId).orElseThrow(() -> new EmployerNotFoundException());
-		String login = employer.getApplicantInfo().getEmail();
-		employer.getCvCollections().get(collectionName).add(cv.getCvId());
-		employersRepository.save(employer);
-		AddCVDto res = modelMapper.map(employer, AddCVDto.class);
-		res.setLogin(login);
-		return res;
 	}
 
 }

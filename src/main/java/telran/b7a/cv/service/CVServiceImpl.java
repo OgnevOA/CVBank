@@ -1,5 +1,9 @@
 package telran.b7a.cv.service;
 
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,13 +36,20 @@ public class CVServiceImpl implements CVService {
 
 	@Override
 	public CVDto getCV(String cvId) {
-		CV cv = cvRepository.findById(cvId).orElseThrow(() -> new CVNotFoundException(cvId));
-		return modelMapper.map(cv, CVDto.class);
+		CV cv = findCVbyId(cvId);
+		CVDto response = modelMapper.map(cv, CVDto.class);
+		Set<String> hideFields = cv.getHideFields();
+		if (!hideFields.isEmpty()) {
+			for (String field : hideFields) {
+				response = setNull(response, field);
+			}
+		}
+		return response;
 	}
 
 	@Override
 	public CVDto updateCV(String cvId, NewCVDto newDataCV) {
-		CV cv = cvRepository.findById(cvId).orElseThrow(() -> new CVNotFoundException(cvId));
+		CV cv = findCVbyId(cvId);
 		CV cvNew = modelMapper.map(newDataCV, CV.class);
 		cvNew.setCvId(cv.getCvId());
 		cvRepository.save(cvNew);
@@ -47,19 +58,27 @@ public class CVServiceImpl implements CVService {
 
 	@Override
 	public void removeCV(String cvId) {
-		CV cv = cvRepository.findById(cvId).orElseThrow(() -> new CVNotFoundException(cvId));
+		CV cv = findCVbyId(cvId);
 		cvRepository.delete(cv);
 
 	}
 
 	@Override
 	public CVDto anonymiseCV(String cvId, AnonymiseCVDto anonymousFields) {
-		CV cv = cvRepository.findById(cvId).orElseThrow(() -> new CVNotFoundException(cvId));
+		CV cv = findCVbyId(cvId);
+		cv.setHideFields(anonymousFields.getHideFields());
+		cvRepository.save(cv);
 		CVDto response = modelMapper.map(cv, CVDto.class);
 		for (String field : anonymousFields.getHideFields()) {
 			response = setNull(response, field);
 		}
 		return response;
+	}
+	
+	@Override
+	public List<CVDto> getCVs(List<String> cvsId) {
+		return cvRepository.findBycvIdIn(cvsId).map(cv -> modelMapper.map(cv, CVDto.class))
+				.collect(Collectors.toList());
 	}
 
 	private CVDto setNull(CVDto response, String field) {
@@ -84,4 +103,7 @@ public class CVServiceImpl implements CVService {
 
 	}
 
+	private CV findCVbyId(String cvId) {
+		return cvRepository.findById(cvId).orElseThrow(() -> new CVNotFoundException(cvId));
+	}
 }

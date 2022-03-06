@@ -1,5 +1,7 @@
 package telran.b7a.cv.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,10 +32,21 @@ public class CVController {
 	public CVDto addCV(@RequestBody NewCVDto newCV) {
 		return cvService.addCV(newCV);
 	}
+	
+	@PostMapping("/cvs")
+	public List<CVDto> getCVsByIDs(@RequestBody List<String> cvsId) {
+		return cvService.getCVs(cvsId);
+		
+	}
 
 	@GetMapping("/{cvId}")
 	public CVDto getCV(@PathVariable String cvId) {
 		return cvService.getCV(cvId);
+	}
+
+	@PutMapping("/anonymise/{cvId}")
+	public CVDto anonymiseCV(@PathVariable String cvId, @RequestBody AnonymiseCVDto anonymousFields) {
+		return cvService.anonymiseCV(cvId, anonymousFields);
 	}
 
 	@PutMapping("/update/{cvId}")
@@ -44,11 +57,6 @@ public class CVController {
 	@DeleteMapping("/delete/{cvId}")
 	public void removeCV(@PathVariable String cvId) {
 		cvService.removeCV(cvId);
-	}
-
-	@PutMapping("/anonymise/{cvId}")
-	public CVDto anonymiseCV(@PathVariable String cvId, @RequestBody AnonymiseCVDto anonymousFields) {
-		return cvService.anonymiseCV(cvId, anonymousFields);
 	}
 
 }
