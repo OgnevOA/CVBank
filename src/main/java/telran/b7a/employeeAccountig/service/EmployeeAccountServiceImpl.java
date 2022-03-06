@@ -1,5 +1,8 @@
 package telran.b7a.employeeAccountig.service;
 
+import java.util.Base64;
+import java.util.Optional;
+
 import org.mindrot.jbcrypt.BCrypt;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +58,28 @@ public class EmployeeAccountServiceImpl implements EmployeeAccountService {
 	public void deleteEmployee(String id) {
 		Employee employee = repository.findById(id).orElseThrow(() -> new EmployeeNotFoundException());
 		repository.delete(employee);
+	}
+
+	@Override
+	public InfoEmployeeDto loginEmployee(String token) {
+		String email = getLogin(token).orElse("");
+		Employee employee = repository.findById(email).orElseThrow(() -> new EmployeeNotFoundException());
+		return modelMapper.map(employee, InfoEmployeeDto.class);
+	}
+	
+	private Optional<String> getLogin(String token) {
+		String login = null;
+		try {
+			token = token.split(" ")[1];
+			byte[] bytesDecode = Base64.getDecoder().decode(token);
+			token = new String(bytesDecode);
+			login = token.split(":")[0];
+
+		} catch (Exception e) {
+			e.printStackTrace();
+
+		}
+		return Optional.ofNullable(login);
 	}
 
 }
