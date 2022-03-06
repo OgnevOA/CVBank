@@ -1,7 +1,5 @@
 package telran.b7a.employeeAccountig.controller;
 
-import java.util.Base64;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,8 +33,7 @@ public class EmployeeAccountingController {
 
 	@PostMapping("/login")
 	public InfoEmployeeDto loginEmployee(@RequestHeader("Authorization") String token) {
-		String login = decodeBasicToken(token);
-		return employeeAccountService.getEmployee(login);
+		return employeeAccountService.loginEmployee(token);
 	}
 
 	@PutMapping("/{id}")
@@ -53,11 +50,5 @@ public class EmployeeAccountingController {
 	@GetMapping("/{id}")
 	public InfoEmployeeDto findEmployee(@PathVariable String id) {
 		return employeeAccountService.getEmployee(id);
-	}
-	
-	private String decodeBasicToken(String token) {
-		String credentials = token.split(" ")[1];
-		byte[] login = Base64.getDecoder().decode(credentials);
-		return new String(login).split(":")[0];
 	}
 }
