@@ -53,8 +53,8 @@ public class EmployerServiceImpl implements EmployerService {
 	}
 
 	@Override
-	public EmployerDto loginEmployer(String token) {
-		String email = getLogin(token).orElse(null);
+	public EmployerDto loginEmployer(String id) {
+		String email = getLogin(id).orElse(null);
 		if (!employersRepository.existsByApplicantInfoEmailIgnoreCase(email)) {
 			throw new EmployerNotFoundException();
 		}
