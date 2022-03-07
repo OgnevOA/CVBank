@@ -15,4 +15,5 @@ public class Configurations {
 				.setMatchingStrategy(MatchingStrategies.STRICT);
 		return modelMapper;
 	}
+
 }

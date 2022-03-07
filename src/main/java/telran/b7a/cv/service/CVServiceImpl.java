@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import telran.b7a.cv.dao.CVRepository;
-import telran.b7a.cv.dto.AnonymiseCVDto;
 import telran.b7a.cv.dto.CVDto;
 import telran.b7a.cv.dto.NewCVDto;
 import telran.b7a.cv.exceptions.CVNotFoundException;
@@ -64,12 +63,12 @@ public class CVServiceImpl implements CVService {
 	}
 
 	@Override
-	public CVDto anonymiseCV(String cvId, AnonymiseCVDto anonymousFields) {
+	public CVDto anonymiseCV(String cvId, Set<String> anonymousFields) {
 		CV cv = findCVbyId(cvId);
-		cv.setHideFields(anonymousFields.getHideFields());
+		cv.setHideFields(anonymousFields);
 		cvRepository.save(cv);
 		CVDto response = modelMapper.map(cv, CVDto.class);
-		for (String field : anonymousFields.getHideFields()) {
+		for (String field : anonymousFields) {
 			response = setNull(response, field);
 		}
 		return response;
@@ -82,11 +81,15 @@ public class CVServiceImpl implements CVService {
 	}
 
 	private CVDto setNull(CVDto response, String field) {
-		if (field.equalsIgnoreCase("Name and last name")) {
+		if (field.equalsIgnoreCase("firstName")) {
 			response.setFirstName(null);
+			return response;
+		}
+		if (field.equalsIgnoreCase("lastName")) {
 			response.setLastName(null);
 			return response;
 		}
+		
 		if (field.equalsIgnoreCase("phone")) {
 			response.setPhone(null);
 			return response;

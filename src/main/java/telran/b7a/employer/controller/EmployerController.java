@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -35,8 +34,8 @@ public class EmployerController {
 	}
 
 	@PostMapping("/login")
-	public EmployerDto loginEmployer(@RequestHeader("Authorization") String token) {
-		return employerService.loginEmployer(token);
+	public EmployerDto loginEmployer(Authentication authentication) {
+		return employerService.loginEmployer(authentication.getName());
 	}
 
 	@GetMapping("/company/{companyName}")
@@ -49,20 +48,31 @@ public class EmployerController {
 		return employerService.updateEmployer(employerId, newCredentials);
 	}
 
-	@DeleteMapping("/{employerId}")
-	public void removeEmployer(@PathVariable String employerId) {
-		employerService.removeEmployer(employerId);
-	}
-
 	@PutMapping("/{employerId}/collection/{collectionName}")
 	public AddCVDto addCvCollection(@PathVariable String employerId, @PathVariable String collectionName) {
-		return employerService.addCVCollection(employerId, collectionName);
+		return employerService.addCvCollection(employerId, collectionName);
 	}
 
 	@PutMapping("/{employerId}/collection/{collectionName}/{cvId}")
 	public AddCVDto addCvToCollection(@PathVariable String employerId, @PathVariable String collectionName,
 			@PathVariable String cvId) {
-		return employerService.addCVtoCollection(employerId, collectionName, cvId);
+		return employerService.addCvToCollection(employerId, collectionName, cvId);
+	}
+
+	@DeleteMapping("/{employerId}")
+	public void removeEmployer(@PathVariable String employerId) {
+		employerService.removeEmployer(employerId);
+	}
+
+	@DeleteMapping("/{employerId}/collection/{collectionName}")
+	public void removeCvCollection(@PathVariable String employerId, @PathVariable String collectionName) {
+		employerService.removeCvCollection(employerId, collectionName);
+	}
+
+	@DeleteMapping("/{employerId}/collection/{collectionName}/{cvId}")
+	public void removeCvFromCollection(@PathVariable String employerId, @PathVariable String collectionName,
+			@PathVariable String cvId) {
+		employerService.removeCvFromCollection(employerId, collectionName, cvId);
 	}
 
 }

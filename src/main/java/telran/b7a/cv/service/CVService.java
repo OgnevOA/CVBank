@@ -1,8 +1,8 @@
 package telran.b7a.cv.service;
 
 import java.util.List;
+import java.util.Set;
 
-import telran.b7a.cv.dto.AnonymiseCVDto;
 import telran.b7a.cv.dto.CVDto;
 import telran.b7a.cv.dto.NewCVDto;
 
@@ -18,5 +18,5 @@ public interface CVService {
 
 	void removeCV(String cvId);
 
-	CVDto anonymiseCV(String cvId, AnonymiseCVDto anonymousFields);
+	CVDto anonymiseCV(String cvId, Set<String> anonymousFields);
 }

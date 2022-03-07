@@ -1,8 +1,6 @@
 package telran.b7a.employer.service;
 
-import java.util.Base64;
 import java.util.HashSet;
-import java.util.Optional;
 
 import org.mindrot.jbcrypt.BCrypt;
 import org.modelmapper.ModelMapper;
@@ -53,12 +51,8 @@ public class EmployerServiceImpl implements EmployerService {
 	}
 
 	@Override
-	public EmployerDto loginEmployer(String token) {
-		String email = getLogin(token).orElse(null);
-		if (!employersRepository.existsByApplicantInfoEmailIgnoreCase(email)) {
-			throw new EmployerNotFoundException();
-		}
-		Employer employer = employersRepository.findByApplicantInfoEmailIgnoreCase(email);
+	public EmployerDto loginEmployer(String login) {
+		Employer employer = employersRepository.findByApplicantInfoEmailIgnoreCase(login);
 		return modelMapper.map(employer, EmployerDto.class);
 	}
 
@@ -91,7 +85,7 @@ public class EmployerServiceImpl implements EmployerService {
 	}
 
 	@Override
-	public AddCVDto addCVCollection(String employerId, String collectionName) {
+	public AddCVDto addCvCollection(String employerId, String collectionName) {
 		Employer employer = findEmployerById(employerId);
 		String login = employer.getApplicantInfo().getEmail();
 		employer.getCvCollections().put(collectionName, new HashSet<>());
@@ -102,10 +96,20 @@ public class EmployerServiceImpl implements EmployerService {
 	}
 
 	@Override
-	public AddCVDto addCVtoCollection(String employerId, String collectionName, String cvId) {
+	public void removeCvCollection(String employerId, String collectionName) {
+		Employer employer = findEmployerById(employerId);
+		employer.getCvCollections().remove(collectionName);
+		employersRepository.save(employer);
+	}
+
+	@Override
+	public AddCVDto addCvToCollection(String employerId, String collectionName, String cvId) {
 		CV cv = cvRepository.findById(cvId).orElseThrow(() -> new CVNotFoundException());
 		Employer employer = findEmployerById(employerId);
 		String login = employer.getApplicantInfo().getEmail();
+		if (employer.getCvCollections().get(collectionName) == null) {
+			employer.getCvCollections().put(collectionName, new HashSet<>());
+		}
 		employer.getCvCollections().get(collectionName).add(cv.getCvId());
 		employersRepository.save(employer);
 		AddCVDto res = modelMapper.map(employer, AddCVDto.class);
@@ -113,23 +117,17 @@ public class EmployerServiceImpl implements EmployerService {
 		return res;
 	}
 
-	private Employer findEmployerById(String employerId) {
-		return employersRepository.findById(employerId).orElseThrow(() -> new EmployerNotFoundException());
+	@Override
+	public void removeCvFromCollection(String employerId, String collectionName, String cvId) {
+		CV cv = cvRepository.findById(cvId).orElseThrow(() -> new CVNotFoundException());
+		Employer employer = findEmployerById(employerId);
+		employer.getCvCollections().get(collectionName).remove(cv.getCvId());
+		employersRepository.save(employer);
+
 	}
 
-	private Optional<String> getLogin(String token) {
-		String login = null;
-		try {
-			token = token.split(" ")[1];
-			byte[] bytesDecode = Base64.getDecoder().decode(token);
-			token = new String(bytesDecode);
-			login = token.split(":")[0];
-
-		} catch (Exception e) {
-			e.printStackTrace();
-
-		}
-		return Optional.ofNullable(login);
+	private Employer findEmployerById(String employerId) {
+		return employersRepository.findById(employerId).orElseThrow(() -> new EmployerNotFoundException());
 	}
 
 }
