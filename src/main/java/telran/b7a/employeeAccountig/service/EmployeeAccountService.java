@@ -9,8 +9,6 @@ public interface EmployeeAccountService {
 	
 	InfoEmployeeDto getEmployee(String id);
 	
-	InfoEmployeeDto loginEmployee(String token);
-	
 	UpdateEmployeeDto updateEmployee(UpdateEmployeeDto employeeData, String id);
 	
 	void deleteEmployee(String id);
