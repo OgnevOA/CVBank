@@ -17,7 +17,6 @@ public class Configurations {
 				.setMatchingStrategy(MatchingStrategies.STRICT);
 		return modelMapper;
 	}
-	
 	@Bean
 	public PasswordEncoder getPasswordEncoder() {
 		return new BCryptPasswordEncoder();
