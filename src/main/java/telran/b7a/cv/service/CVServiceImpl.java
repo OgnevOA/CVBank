@@ -13,23 +13,30 @@ import telran.b7a.cv.dto.CVDto;
 import telran.b7a.cv.dto.NewCVDto;
 import telran.b7a.cv.exceptions.CVNotFoundException;
 import telran.b7a.cv.models.CV;
+import telran.b7a.employeeAccountig.dao.EmployeeAcconutingMongoRepository;
+import telran.b7a.employeeAccountig.dto.exceptions.EmployeeNotFoundException;
+import telran.b7a.employeeAccountig.model.Employee;
 
 @Service
 public class CVServiceImpl implements CVService {
 
 	CVRepository cvRepository;
+	EmployeeAcconutingMongoRepository employeeRepository;
 	ModelMapper modelMapper;
-
 	@Autowired
-	public CVServiceImpl(CVRepository cvRepository, ModelMapper modelMapper) {
+	public CVServiceImpl(CVRepository cvRepository, ModelMapper modelMapper, EmployeeAcconutingMongoRepository employeeRepository) {
 		this.cvRepository = cvRepository;
 		this.modelMapper = modelMapper;
+		this.employeeRepository = employeeRepository;
 	}
 
 	@Override
-	public CVDto addCV(NewCVDto newCV) {
+	public CVDto addCV(NewCVDto newCV, String login) {
 		CV cv = modelMapper.map(newCV, CV.class);
-		cvRepository.save(cv);
+		Employee employee = employeeRepository.findById(login).orElseThrow(() -> new EmployeeNotFoundException());
+		String cvId = cvRepository.save(cv).getCvId();
+		employee.getCvs().add(cvId);
+		employeeRepository.save(employee);
 		return modelMapper.map(cv, CVDto.class);
 	}
 
@@ -56,10 +63,12 @@ public class CVServiceImpl implements CVService {
 	}
 
 	@Override
-	public void removeCV(String cvId) {
+	public void removeCV(String cvId, String login) {
 		CV cv = findCVbyId(cvId);
+		Employee employee = employeeRepository.findById(login).orElseThrow(() -> new EmployeeNotFoundException());
+		employee.getCvs().remove(cvId);
+		employeeRepository.save(employee);
 		cvRepository.delete(cv);
-
 	}
 
 	@Override

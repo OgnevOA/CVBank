@@ -8,7 +8,7 @@ import telran.b7a.cv.dto.NewCVDto;
 
 public interface CVService {
 
-	CVDto addCV(NewCVDto newCV);
+	CVDto addCV(NewCVDto newCV, String login);
 
 	CVDto getCV(String cvId);
 	
@@ -16,7 +16,7 @@ public interface CVService {
 
 	CVDto updateCV(String cvId, NewCVDto newDataCV);
 
-	void removeCV(String cvId);
+	void removeCV(String cvId, String login);
 
 	CVDto anonymiseCV(String cvId, Set<String> anonymousFields);
 }
