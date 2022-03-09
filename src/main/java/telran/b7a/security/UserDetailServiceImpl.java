@@ -34,6 +34,7 @@ public class UserDetailServiceImpl implements UserDetailsService {
 			Employee employee = employeeRepo.findById(username).orElseThrow(() -> new EmployeeNotFoundException());
 			user = new User(username, employee.getPassword(), AuthorityUtils.createAuthorityList("ROLE_EMPLOYEE"));
 		}
+		System.out.println(user);
 		return user;
 	}
 }
