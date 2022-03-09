@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import telran.b7a.cv.dto.CVDto;
+import telran.b7a.cv.dto.CVSearchDto;
 import telran.b7a.cv.dto.NewCVDto;
 import telran.b7a.cv.service.CVService;
 
@@ -29,8 +31,8 @@ public class CVController {
 	}
 
 	@PostMapping("/add")
-	public CVDto addCV(@RequestBody NewCVDto newCV) {
-		return cvService.addCV(newCV);
+	public CVDto addCV(@RequestBody NewCVDto newCV, Authentication authentication) {
+		return cvService.addCV(newCV, authentication.getName());
 	}
 
 	@PostMapping("/cvs")
@@ -40,8 +42,14 @@ public class CVController {
 	}
 
 	@GetMapping("/{cvId}")
-	public CVDto getCV(@PathVariable String cvId) {
-		return cvService.getCV(cvId);
+	public CVDto getCV(@PathVariable String cvId, Authentication authentication) {
+		String role = authentication.getAuthorities().stream().findFirst().orElse(null).getAuthority();
+		return cvService.getCV(cvId, role);
+	}
+	
+	@GetMapping("/cvSearch")
+	public List<CVDto> getCVsByParameters(@RequestBody CVSearchDto paramaters) {
+		return cvService.getCVsByParamaters(paramaters);
 	}
 
 	@PutMapping("/anonymise/{cvId}")
@@ -55,8 +63,8 @@ public class CVController {
 	}
 
 	@DeleteMapping("/delete/{cvId}")
-	public void removeCV(@PathVariable String cvId) {
-		cvService.removeCV(cvId);
+	public void removeCV(@PathVariable String cvId, Authentication authentication) {
+		cvService.removeCV(cvId, authentication.getName());
 	}
 
 }
