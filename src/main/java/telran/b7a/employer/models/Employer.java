@@ -22,6 +22,7 @@ import lombok.ToString;
 @EqualsAndHashCode(of = "id")
 @ToString
 public class Employer {
+
 	@Id
 	String id;
 	Applicant applicantInfo;

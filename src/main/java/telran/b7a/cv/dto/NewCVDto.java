@@ -18,7 +18,9 @@ public class NewCVDto {
 	String lastName;
 	String email;
 	String phone;
-	int isVerified;
+	String position;
+	String location;
+	boolean isRelocated;
 	String preambule;
 	Set<String> skills;
 	List<ExperienceDto> experience;
