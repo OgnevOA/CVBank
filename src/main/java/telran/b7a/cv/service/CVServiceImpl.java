@@ -39,7 +39,6 @@ public class CVServiceImpl implements CVService {
 	CVRepository cvRepository;
 	EmployeeAcconutingMongoRepository employeeRepository;
 	ModelMapper modelMapper;
-
 	@Autowired
 	public CVServiceImpl(CVRepository cvRepository, ModelMapper modelMapper,
 			EmployeeAcconutingMongoRepository employeeRepository) {
@@ -54,7 +53,7 @@ public class CVServiceImpl implements CVService {
 		Double[] coordinates = getCoordinatesByCity(newCV.getLocation());
 		Double lon = coordinates[0];
 		Double lat = coordinates[1];
-		cv.setCoordinates(new Point(lat, lon));
+		cv.setCoordinates(new Point(lon, lat));
 		Employee employee = employeeRepository.findById(login).orElseThrow(() -> new EmployeeNotFoundException());
 		String cvId = cvRepository.save(cv).getCvId();
 		employee.getCvs().add(cvId);
@@ -91,7 +90,6 @@ public class CVServiceImpl implements CVService {
 		employee.getCvs().remove(cvId);
 		employeeRepository.save(employee);
 		cvRepository.delete(cv);
-
 	}
 
 	@Override
