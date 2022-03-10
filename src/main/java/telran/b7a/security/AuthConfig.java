@@ -24,8 +24,7 @@ public class AuthConfig {
 		
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
-			http.httpBasic();
-			http.csrf().disable();
+			http.cors().and().httpBasic().and().csrf().disable();
 			http.sessionManagement()
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 			http.authorizeRequests()
