@@ -11,6 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import telran.b7a.cv.enums.LevelVerification;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -29,8 +30,7 @@ public class CVDto {
 	String phone;
 	String position;
 	String location;
-	int cvScore;
-	boolean isVerified;
+	LevelVerification cvScore;
 	boolean isRelocated;
 	String preambule;
 	Set<String> skills;

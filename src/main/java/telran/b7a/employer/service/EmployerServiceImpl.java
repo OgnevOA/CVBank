@@ -110,7 +110,7 @@ public class EmployerServiceImpl implements EmployerService {
 		if (employer.getCvCollections().get(collectionName) == null) {
 			employer.getCvCollections().put(collectionName, new HashSet<>());
 		}
-		employer.getCvCollections().get(collectionName).add(cv.getCvId());
+		employer.getCvCollections().get(collectionName).add(cv.getCvId().toHexString());
 		employersRepository.save(employer);
 		AddCVDto res = modelMapper.map(employer, AddCVDto.class);
 		res.setLogin(login);
@@ -121,9 +121,8 @@ public class EmployerServiceImpl implements EmployerService {
 	public void removeCvFromCollection(String employerId, String collectionName, String cvId) {
 		CV cv = cvRepository.findById(cvId).orElseThrow(() -> new CVNotFoundException());
 		Employer employer = findEmployerById(employerId);
-		employer.getCvCollections().get(collectionName).remove(cv.getCvId());
+		employer.getCvCollections().get(collectionName).remove(cv.getCvId().toHexString());
 		employersRepository.save(employer);
-
 	}
 
 	private Employer findEmployerById(String employerId) {

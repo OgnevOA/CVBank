@@ -29,7 +29,7 @@ public class CustomSecurity {
 	
 	public boolean checkCVAuthority(String cvid, String name) {
 		Employee employee = employeeRepo.findById(name).orElseThrow(() -> new EmployeeNotFoundException());
-		System.out.println(employee.getCvs().contains(cvid));
-		return employee.getCvs().contains(cvid);
+		System.out.println(employee.getCv_id().contains(cvid));
+		return employee.getCv_id().contains(cvid);
 	}
 }

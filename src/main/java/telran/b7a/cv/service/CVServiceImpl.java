@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,6 +40,7 @@ public class CVServiceImpl implements CVService {
 	CVRepository cvRepository;
 	EmployeeAcconutingMongoRepository employeeRepository;
 	ModelMapper modelMapper;
+
 	@Autowired
 	public CVServiceImpl(CVRepository cvRepository, ModelMapper modelMapper,
 			EmployeeAcconutingMongoRepository employeeRepository) {
@@ -55,8 +57,8 @@ public class CVServiceImpl implements CVService {
 		Double lat = coordinates[1];
 		cv.setCoordinates(new Point(lon, lat));
 		Employee employee = employeeRepository.findById(login).orElseThrow(() -> new EmployeeNotFoundException());
-		String cvId = cvRepository.save(cv).getCvId();
-		employee.getCvs().add(cvId);
+		ObjectId cvId = cvRepository.save(cv).getCvId();
+		employee.getCv_id().add(cvId.toHexString());
 		employeeRepository.save(employee);
 		return modelMapper.map(cv, CVDto.class);
 	}
@@ -87,7 +89,7 @@ public class CVServiceImpl implements CVService {
 	public void removeCV(String cvId, String login) {
 		CV cv = findCVbyId(cvId);
 		Employee employee = employeeRepository.findById(login).orElseThrow(() -> new EmployeeNotFoundException());
-		employee.getCvs().remove(cvId);
+		employee.getCv_id().remove(cvId);
 		employeeRepository.save(employee);
 		cvRepository.delete(cv);
 	}
