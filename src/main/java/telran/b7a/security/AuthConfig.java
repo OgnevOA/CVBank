@@ -19,7 +19,7 @@ public class AuthConfig {
 		@Override
 		public void configure(WebSecurity web) {
 			web.ignoring()
-			.antMatchers(HttpMethod.POST, "/cvbank/employee/register**", "/cvbank/employer/signup**");
+			.antMatchers(HttpMethod.POST, "/cvbank/employee/signup**", "/cvbank/employer/signup**", "/cvbank/notify/**");
 		}
 		
 		@Override
@@ -29,7 +29,7 @@ public class AuthConfig {
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 			http.authorizeRequests()
 					//==================CV=================
-				.antMatchers(HttpMethod.POST, "/cvbank/cv")			//Add CV
+				.antMatchers(HttpMethod.POST, "/cvbank/cv")				//Add CV
 					.access("hasRole('EMPLOYEE')")
 				.antMatchers(HttpMethod.DELETE, "/cvbank/cv/{cvid}")	//Delete CV
 					.access("@customSecurity.checkCVAuthority(#cvid, authentication.name)")

@@ -18,6 +18,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import telran.b7a.cv.enums.LevelConfirm;
+import telran.b7a.cv.enums.LevelVerification;
 
 @Getter
 @Setter
@@ -45,6 +47,7 @@ public class CV {
 	List<Education> educations;
 	List<Experience> experience;
 	Other other;
+	LocalDate dateCreated = LocalDate.now();
 	Set<String> links;
 	Integer template;
 	

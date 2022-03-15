@@ -11,6 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import telran.b7a.cv.enums.LevelVerification;
 
 @AllArgsConstructor
 @NoArgsConstructor

@@ -30,6 +30,7 @@ public class UserDetailServiceImpl implements UserDetailsService {
 		if (employerAccount != null) {
 			user = new User(username, employerAccount.getPassword(),
 					AuthorityUtils.createAuthorityList("ROLE_EMPLOYER"));
+			//TODO add employers roles (approved/non approved)
 		} else {
 			Employee employee = employeeRepo.findById(username).orElseThrow(() -> new EmployeeNotFoundException());
 			user = new User(username, employee.getPassword(), AuthorityUtils.createAuthorityList("ROLE_EMPLOYEE"));

@@ -2,13 +2,16 @@ package telran.b7a.employeeAccountig.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import telran.b7a.employeeAccountig.dto.InfoEmployeeDto;
@@ -18,6 +21,8 @@ import telran.b7a.employeeAccountig.service.EmployeeAccountService;
 
 @RestController
 @RequestMapping("/cvbank/employee")
+@CrossOrigin(origins = "*", methods = { RequestMethod.DELETE, RequestMethod.GET, RequestMethod.OPTIONS,
+		RequestMethod.POST, RequestMethod.PUT }, allowedHeaders = "*", exposedHeaders = "*")
 public class EmployeeAccountingController {
 	EmployeeAccountService employeeAccountService;
 
@@ -26,20 +31,18 @@ public class EmployeeAccountingController {
 		this.employeeAccountService = employeeAccountService;
 	}
 
-	@PostMapping("/register")
+	@PostMapping("/signup")
 	public InfoEmployeeDto registerEmployee(@RequestBody RegisterEmployeeDto newEmployee) {
 		return employeeAccountService.registerEmployee(newEmployee);
 	}
 
-	@PostMapping("/login")
+	@PostMapping("/signin")
 	public InfoEmployeeDto loginEmployee(Authentication authentication) {
-		System.out.println(authentication);
 		return employeeAccountService.getEmployee(authentication.getName());
 	}
 
 	@PutMapping("/{id}")
-	public UpdateEmployeeDto updateEmployee(@RequestBody UpdateEmployeeDto employeeData,
-			@PathVariable String id) {
+	public InfoEmployeeDto updateEmployee(@RequestBody UpdateEmployeeDto employeeData, @PathVariable String id) {
 		return employeeAccountService.updateEmployee(employeeData, id);
 	}
 
@@ -51,5 +54,15 @@ public class EmployeeAccountingController {
 	@GetMapping("/{id}")
 	public InfoEmployeeDto findEmployee(@PathVariable String id) {
 		return employeeAccountService.getEmployee(id);
+	}
+
+	@PutMapping("/login")
+	public InfoEmployeeDto updateLogin(Authentication authentication, @RequestHeader("X-Login") String newLogin) {
+		return employeeAccountService.changeEmployeeLogin(authentication.getName(), newLogin);
+	}
+	
+	@PutMapping("/pass")
+	public void updatePassword(Authentication authentication, @RequestHeader("X-Password") String newPassword) {
+		employeeAccountService.changeEmployeePassword(authentication.getName(), newPassword);
 	}
 }

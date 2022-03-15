@@ -46,17 +46,37 @@ public class EmployeeAccountServiceImpl implements EmployeeAccountService {
 	}
 
 	@Override
-	public UpdateEmployeeDto updateEmployee(UpdateEmployeeDto employeeData, String id) {
+	public InfoEmployeeDto updateEmployee(UpdateEmployeeDto employeeData, String id) {
 		Employee employee = repository.findById(id).orElseThrow(() -> new EmployeeNotFoundException());
 		employee.setFirstName(employeeData.getFirstName());
 		employee.setLastName(employeeData.getLastName());
 		repository.save(employee);
-		return modelMapper.map(employee, UpdateEmployeeDto.class);
+		return modelMapper.map(employee, InfoEmployeeDto.class);
 	}
 
 	@Override
 	public void deleteEmployee(String id) {
 		Employee employee = repository.findById(id).orElseThrow(() -> new EmployeeNotFoundException());
 		repository.delete(employee);
+	}
+
+	@Override
+	public InfoEmployeeDto changeEmployeeLogin(String id, String newLogin) {
+		if (repository.existsById(newLogin)) {
+			throw new EmployeeAlreadyExistException();
+		}
+		Employee employee = repository.findById(id).orElseThrow(() -> new EmployeeNotFoundException());
+		employee.setEmail(newLogin);
+		repository.deleteById(id);
+		repository.save(employee);
+		return modelMapper.map(employee, InfoEmployeeDto.class);
+	}
+
+	@Override
+	public void changeEmployeePassword(String id, String newPassword) {
+		Employee employee = repository.findById(id).orElseThrow(() -> new EmployeeNotFoundException());
+		String password = passwordEncoder.encode(newPassword);
+		employee.setPassword(password);
+		repository.save(employee);
 	}
 }
