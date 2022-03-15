@@ -1,6 +1,9 @@
 package telran.b7a.employer.service;
 
 import java.util.HashSet;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.mindrot.jbcrypt.BCrypt;
 import org.modelmapper.ModelMapper;
@@ -17,6 +20,7 @@ import telran.b7a.employer.dto.NewEmployerDto;
 import telran.b7a.employer.dto.UpdateEmployerDto;
 import telran.b7a.employer.exceptions.EmployerExistException;
 import telran.b7a.employer.exceptions.EmployerNotFoundException;
+import telran.b7a.employer.exceptions.LoginAlreadyUsedException;
 import telran.b7a.employer.models.Applicant;
 import telran.b7a.employer.models.Company;
 import telran.b7a.employer.models.Employer;
@@ -38,61 +42,93 @@ public class EmployerServiceImpl implements EmployerService {
 
 	@Override
 	public EmployerDto addEmployer(NewEmployerDto newEmployer) {
-		String companyName = newEmployer.getCompanyInfo().getName();
-		if (employersRepository.existsByCompanyInfoNameIgnoreCase(companyName)) {
-			throw new EmployerExistException(companyName);
+		if (employersRepository.existsById(newEmployer.getEmail())) {
+			throw new EmployerExistException(newEmployer.getEmail());
 		}
 		Applicant newApllicant = modelMapper.map(newEmployer.getApplicantInfo(), Applicant.class);
 		Company newCompany = modelMapper.map(newEmployer.getCompanyInfo(), Company.class);
-		Employer employer = new Employer(newApllicant, newCompany,
+		Employer employer = new Employer(newEmployer.getEmail(),newApllicant, newCompany,
 				BCrypt.hashpw(newEmployer.getPassword(), BCrypt.gensalt()));
 		employersRepository.save(employer);
 		return modelMapper.map(employer, EmployerDto.class);
 	}
 
 	@Override
-	public EmployerDto loginEmployer(String login) {
-		Employer employer = employersRepository.findByApplicantInfoEmailIgnoreCase(login);
+	public EmployerDto loginEmployer(String email) {
+		Employer employer = employersRepository.findById(email).orElseThrow(() -> new EmployerNotFoundException());
 		return modelMapper.map(employer, EmployerDto.class);
 	}
 
 	@Override
-	public EmployerDto getEmployer(String companyName) {
-		Employer employer = employersRepository.findByCompanyInfoNameIgnoreCase(companyName);
-		if (employer == null) {
-			throw new EmployerNotFoundException(companyName);
+	public List<EmployerDto> getEmployerByName(String companyName) {
+		Stream<Employer> employers = employersRepository.findByCompanyInfoNameIgnoreCase(companyName);
+		if (employers == null) {
+			throw new EmployerNotFoundException();
 		}
+		return employers.map(e -> modelMapper.map(e, EmployerDto.class)).collect(Collectors.toList());
+	}
+
+	@Override
+	public EmployerDto getEmployerById(String email) {
+		Employer employer = employersRepository.findById(email).orElseThrow(() -> new EmployerNotFoundException());
 		return modelMapper.map(employer, EmployerDto.class);
 	}
 
 	@Override
-	public EmployerDto updateEmployer(String employerId, UpdateEmployerDto newCredentials) {
-		Employer employer = findEmployerById(employerId);
-		String email = employer.getApplicantInfo().getEmail();
+	public EmployerDto updateEmployer(String email, UpdateEmployerDto newCredentials) {
+		Employer employer = employersRepository.findById(email).orElseThrow(() -> new EmployerNotFoundException());
 		Applicant applicantInfo = modelMapper.map(newCredentials.getApplicantInfo(), Applicant.class);
 		Company companyInfo = modelMapper.map(newCredentials.getCompanyInfo(), Company.class);
 		employer.setApplicantInfo(applicantInfo);
-		employer.getApplicantInfo().setEmail(email);
 		employer.setCompanyInfo(companyInfo);
 		employersRepository.save(employer);
 		return modelMapper.map(employer, EmployerDto.class);
 	}
 
 	@Override
-	public void removeEmployer(String employerId) {
-		Employer employer = findEmployerById(employerId);
+	public EmployerDto changeLogin(String email, String newLogin) {
+		if (employersRepository.existsById(newLogin)) {
+			throw new LoginAlreadyUsedException(newLogin);
+		}
+		Employer employer = employersRepository.findById(email).orElseThrow(() -> new EmployerNotFoundException());
 		employersRepository.delete(employer);
+		employer.setEmail(newLogin);
+		employersRepository.save(employer);
+		return modelMapper.map(employer, EmployerDto.class);
+	}
+
+	@Override
+	public EmployerDto changePassword(String email, String newPassword) {
+		Employer employer = employersRepository.findById(email).orElseThrow(() -> new EmployerNotFoundException());
+		employer.setPassword(BCrypt.hashpw(newPassword, BCrypt.gensalt()));
+		employersRepository.save(employer);
+		return modelMapper.map(employer, EmployerDto.class);
 	}
 
 	@Override
 	public AddCVDto addCvCollection(String employerId, String collectionName) {
 		Employer employer = findEmployerById(employerId);
-		String login = employer.getApplicantInfo().getEmail();
 		employer.getCvCollections().put(collectionName, new HashSet<>());
 		employersRepository.save(employer);
-		AddCVDto res = modelMapper.map(employer, AddCVDto.class);
-		res.setLogin(login);
-		return res;
+		return modelMapper.map(employer, AddCVDto.class);
+	}
+
+	@Override
+	public AddCVDto addCvToCollection(String employerId, String collectionName, String cvId) {
+		CV cv = cvRepository.findById(cvId).orElseThrow(() -> new CVNotFoundException());
+		Employer employer = findEmployerById(employerId);
+		if (employer.getCvCollections().get(collectionName) == null) {
+			employer.getCvCollections().put(collectionName, new HashSet<>());
+		}
+		employer.getCvCollections().get(collectionName).add(cv.getCvId().toHexString());
+		employersRepository.save(employer);
+		return modelMapper.map(employer, AddCVDto.class);
+	}
+
+	@Override
+	public void removeEmployer(String employerId) {
+		Employer employer = findEmployerById(employerId);
+		employersRepository.delete(employer);
 	}
 
 	@Override
@@ -103,25 +139,10 @@ public class EmployerServiceImpl implements EmployerService {
 	}
 
 	@Override
-	public AddCVDto addCvToCollection(String employerId, String collectionName, String cvId) {
-		CV cv = cvRepository.findById(cvId).orElseThrow(() -> new CVNotFoundException());
-		Employer employer = findEmployerById(employerId);
-		String login = employer.getApplicantInfo().getEmail();
-		if (employer.getCvCollections().get(collectionName) == null) {
-			employer.getCvCollections().put(collectionName, new HashSet<>());
-		}
-		employer.getCvCollections().get(collectionName).add(cv.getCvId());
-		employersRepository.save(employer);
-		AddCVDto res = modelMapper.map(employer, AddCVDto.class);
-		res.setLogin(login);
-		return res;
-	}
-
-	@Override
 	public void removeCvFromCollection(String employerId, String collectionName, String cvId) {
 		CV cv = cvRepository.findById(cvId).orElseThrow(() -> new CVNotFoundException());
 		Employer employer = findEmployerById(employerId);
-		employer.getCvCollections().get(collectionName).remove(cv.getCvId());
+		employer.getCvCollections().get(collectionName).remove(cv.getCvId().toHexString());
 		employersRepository.save(employer);
 
 	}

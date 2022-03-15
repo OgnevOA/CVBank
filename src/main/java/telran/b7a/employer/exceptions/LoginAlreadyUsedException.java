@@ -1,4 +1,4 @@
-package telran.b7a.cv.exceptions;
+package telran.b7a.employer.exceptions;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -7,11 +7,11 @@ import lombok.NoArgsConstructor;
 
 @ResponseStatus(code = HttpStatus.CONFLICT)
 @NoArgsConstructor
-public class CVExistException extends RuntimeException {/**
+public class LoginAlreadyUsedException extends RuntimeException {/**
 	 * 
 	 */
 	private static final long serialVersionUID = -6878819084308767014L;
-	public CVExistException(String cvID) {
-		super("CV " + cvID + " already exist");
+	public LoginAlreadyUsedException(String newLogin) {
+		super("Login " + newLogin + " already used");
 	}
 }

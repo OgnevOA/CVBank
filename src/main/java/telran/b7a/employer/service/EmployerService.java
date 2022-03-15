@@ -1,5 +1,7 @@
 package telran.b7a.employer.service;
 
+import java.util.List;
+
 import telran.b7a.employer.dto.AddCVDto;
 import telran.b7a.employer.dto.EmployerDto;
 import telran.b7a.employer.dto.NewEmployerDto;
@@ -12,17 +14,23 @@ public interface EmployerService {
 	void removeEmployer(String employerId);
 
 	EmployerDto loginEmployer(String login);
-
-	EmployerDto getEmployer(String companyName);
-
-	EmployerDto updateEmployer(String employerId, UpdateEmployerDto newCredentials);
-
-	AddCVDto addCvCollection(String employerId, String collectionName);
-
-	void removeCvCollection(String employerId, String collectionName);
-
-	AddCVDto addCvToCollection(String employerId, String collectionName, String cvId);
 	
-	void removeCvFromCollection(String employerId, String collectionName, String cvId);
+	EmployerDto getEmployerById(String email);
+
+	List<EmployerDto> getEmployerByName(String companyName);
+
+	EmployerDto updateEmployer(String email, UpdateEmployerDto newCredentials);
+	
+	EmployerDto changeLogin(String email, String newLogin);
+	
+	EmployerDto changePassword(String email, String newPassword);
+
+	AddCVDto addCvCollection(String email, String collectionName);
+
+	void removeCvCollection(String email, String collectionName);
+
+	AddCVDto addCvToCollection(String email, String collectionName, String cvId);
+	
+	void removeCvFromCollection(String email, String collectionName, String cvId);
 
 }

@@ -20,7 +20,7 @@ import telran.b7a.cv.dto.NewCVDto;
 import telran.b7a.cv.service.CVService;
 
 @RestController
-@RequestMapping("cvbank/employee/cv")
+@RequestMapping("cvbank/cv")
 public class CVController {
 
 	CVService cvService;
@@ -30,7 +30,7 @@ public class CVController {
 		this.cvService = cvService;
 	}
 
-	@PostMapping("/add")
+	@PostMapping
 	public CVDto addCV(@RequestBody NewCVDto newCV, Authentication authentication) {
 		return cvService.addCV(newCV, authentication.getName());
 	}
@@ -46,23 +46,24 @@ public class CVController {
 		String role = authentication.getAuthorities().stream().findFirst().orElse(null).getAuthority();
 		return cvService.getCV(cvId, role);
 	}
-	
+
 	@GetMapping("/cvSearch")
 	public List<CVDto> getCVsByParameters(@RequestBody CVSearchDto paramaters) {
+		// TODO
 		return cvService.getCVsByParamaters(paramaters);
 	}
 
-	@PutMapping("/anonymise/{cvId}")
+	@PutMapping("/anonymizer/{cvId}")
 	public CVDto anonymiseCV(@PathVariable String cvId, @RequestBody Set<String> anonymousFields) {
 		return cvService.anonymiseCV(cvId, anonymousFields);
 	}
 
-	@PutMapping("/update/{cvId}")
+	@PutMapping("/{cvId}")
 	public CVDto updateCV(@PathVariable String cvId, @RequestBody NewCVDto newDataCV) {
 		return cvService.updateCV(cvId, newDataCV);
 	}
 
-	@DeleteMapping("/delete/{cvId}")
+	@DeleteMapping("/{cvId}")
 	public void removeCV(@PathVariable String cvId, Authentication authentication) {
 		cvService.removeCV(cvId, authentication.getName());
 	}

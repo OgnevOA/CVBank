@@ -22,5 +22,5 @@ public class Employee {
 	String password;
 	String firstName;
 	String lastName;
-	Set<String> cvs = new HashSet<String>();
+	Set<String> cv_id = new HashSet<String>();
 }
