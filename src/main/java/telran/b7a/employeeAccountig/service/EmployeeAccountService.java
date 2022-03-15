@@ -9,7 +9,11 @@ public interface EmployeeAccountService {
 	
 	InfoEmployeeDto getEmployee(String id);
 	
-	UpdateEmployeeDto updateEmployee(UpdateEmployeeDto employeeData, String id);
+	InfoEmployeeDto updateEmployee(UpdateEmployeeDto employeeData, String id);
+	
+	InfoEmployeeDto changeEmployeeLogin(String id, String newLogin);
+	
+	void changeEmployeePassword(String id, String newPassword);
 	
 	void deleteEmployee(String id);
 }
