@@ -7,8 +7,6 @@ import telran.b7a.employeeAccountig.dao.EmployeeAcconutingMongoRepository;
 import telran.b7a.employeeAccountig.dto.exceptions.EmployeeNotFoundException;
 import telran.b7a.employeeAccountig.model.Employee;
 import telran.b7a.employer.dao.EmployerMongoRepository;
-import telran.b7a.employer.exceptions.EmployerNotFoundException;
-import telran.b7a.employer.models.Employer;
 
 @Service("customSecurity")
 public class CustomSecurity {
