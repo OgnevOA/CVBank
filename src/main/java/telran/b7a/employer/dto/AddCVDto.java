@@ -16,7 +16,6 @@ import lombok.ToString;
 @ToString
 public class AddCVDto {
 	
-	String login;
 	Map<String, Set<String>> cvCollections;
 
 }

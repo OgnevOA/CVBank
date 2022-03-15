@@ -25,7 +25,7 @@ import telran.b7a.cv.enums.LevelVerification;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(collection = "CV")
+@Document(collection = "CVs")
 @EqualsAndHashCode(of = "cvId")
 @ToString
 public class CV {
@@ -36,13 +36,12 @@ public class CV {
 	String lastName;
 	String email;
 	String phone;
+	int verificationLevel;
+	boolean isRelevant;
+	String isRelocated;
+	String salary;
+	String address;
 	String position;
-	String location;
-	@GeoSpatialIndexed(type = GeoSpatialIndexType.GEO_2DSPHERE)
-	Point coordinates;
-	LevelVerification cvScore = LevelVerification.NOT_VERIFIED;
-	LevelConfirm cvConfirm = LevelConfirm.PENDING;
-	boolean isRelocated;
 	String preambule;
 	Set<String> skills;
 	List<Education> educations;
@@ -50,6 +49,12 @@ public class CV {
 	Other other;
 	LocalDate dateCreated = LocalDate.now();
 	Set<String> links;
+	Integer template;
+	
+	
+	@GeoSpatialIndexed(type = GeoSpatialIndexType.GEO_2DSPHERE)
+	Point coordinates;
+	LocalDate dateCreated = LocalDate.now();
 	Set<String> hideFields = new HashSet<>();
 
 }

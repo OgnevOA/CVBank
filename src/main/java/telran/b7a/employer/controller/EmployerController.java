@@ -1,5 +1,7 @@
 package telran.b7a.employer.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,52 +36,67 @@ public class EmployerController {
 		this.employerService = employerService;
 	}
 
-	@PostMapping("/register")
+	@PostMapping("/signup")
 	public EmployerDto addEmployer(@RequestBody NewEmployerDto newEmployer) {
 		return employerService.addEmployer(newEmployer);
-
 	}
 
-	@PostMapping("/login")
+	@PostMapping("/signin")
 	public EmployerDto loginEmployer(Authentication authentication) {
 		return employerService.loginEmployer(authentication.getName());
 	}
 
 	@GetMapping("/company/{companyName}")
-	public EmployerDto getEmployer(@PathVariable String companyName) {
-		return employerService.getEmployer(companyName);
+	public List<EmployerDto> getEmployerByName(@PathVariable String companyName) {
+		return employerService.getEmployerByName(companyName);
 	}
 
-	@PutMapping("/{employerId}")
-	public EmployerDto updateEmployer(@PathVariable String employerId, @RequestBody UpdateEmployerDto newCredentials) {
-		return employerService.updateEmployer(employerId, newCredentials);
+	@GetMapping("/{email}")
+	public EmployerDto getEmployerById(@PathVariable String email) {
+		return employerService.getEmployerById(email);
 	}
 
-	@PutMapping("/{employerId}/collection/{collectionName}")
-	public AddCVDto addCvCollection(@PathVariable String employerId, @PathVariable String collectionName) {
-		return employerService.addCvCollection(employerId, collectionName);
+	@PutMapping
+	public EmployerDto updateEmployer(Authentication authentication, @RequestBody UpdateEmployerDto newCredentials) {
+		return employerService.updateEmployer(authentication.getName(), newCredentials);
 	}
 
-	@PutMapping("/{employerId}/collection/{collectionName}/{cvId}")
-	public AddCVDto addCvToCollection(@PathVariable String employerId, @PathVariable String collectionName,
+	@PutMapping("/login")
+	public EmployerDto changeLogin(Authentication authentication, @RequestHeader("X-Login") String newLogin) {
+		return employerService.changeLogin(authentication.getName(), newLogin);
+	}
+
+	@PutMapping("/pass")
+	public EmployerDto changePassword(Authentication authentication, @RequestHeader("X-Password") String newPassword) {
+		return employerService.changePassword(authentication.getName(), newPassword);
+
+	}
+
+	@PutMapping("/collection/{collectionName}")
+	public AddCVDto addCvCollection(Authentication authentication, @PathVariable String collectionName) {
+		return employerService.addCvCollection(authentication.getName(), collectionName);
+	}
+
+	@PutMapping("/collection/{collectionName}/{cvId}")
+	public AddCVDto addCvToCollection(Authentication authentication, @PathVariable String collectionName,
 			@PathVariable String cvId) {
-		return employerService.addCvToCollection(employerId, collectionName, cvId);
+		return employerService.addCvToCollection(authentication.getName(), collectionName, cvId);
 	}
 
-	@DeleteMapping("/{employerId}")
-	public void removeEmployer(@PathVariable String employerId) {
-		employerService.removeEmployer(employerId);
+	@DeleteMapping()
+	public void removeEmployer(Authentication authentications) {
+		employerService.removeEmployer(authentications.getName());
 	}
 
-	@DeleteMapping("/{employerId}/collection/{collectionName}")
-	public void removeCvCollection(@PathVariable String employerId, @PathVariable String collectionName) {
-		employerService.removeCvCollection(employerId, collectionName);
+	@DeleteMapping("/collection/{collectionName}")
+	public void removeCvCollection(Authentication authentication, @PathVariable String collectionName) {
+		employerService.removeCvCollection(authentication.getName(), collectionName);
 	}
 
-	@DeleteMapping("/{employerId}/collection/{collectionName}/{cvId}")
-	public void removeCvFromCollection(@PathVariable String employerId, @PathVariable String collectionName,
+	@DeleteMapping("/collection/{collectionName}/{cvId}")
+	public void removeCvFromCollection(Authentication authentication, @PathVariable String collectionName,
 			@PathVariable String cvId) {
-		employerService.removeCvFromCollection(employerId, collectionName, cvId);
+		employerService.removeCvFromCollection(authentication.getName(), collectionName, cvId);
 	}
 
 }

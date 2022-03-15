@@ -14,6 +14,5 @@ import lombok.ToString;
 public class OtherDto {
 	
 	Set<String> languages;
-	Integer salaryExpectations;
 
 }

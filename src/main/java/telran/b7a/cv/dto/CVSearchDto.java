@@ -25,5 +25,6 @@ public class CVSearchDto {
 	Integer distance;
 	@JsonProperty
 	boolean isReadyRelocate;
+	String cvScore;
 
 }

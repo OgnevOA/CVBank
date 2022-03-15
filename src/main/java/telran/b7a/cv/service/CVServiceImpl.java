@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.geo.Distance;
 import org.springframework.data.geo.Metrics;
 import org.springframework.data.geo.Point;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +26,7 @@ import telran.b7a.cv.dto.CVDto;
 import telran.b7a.cv.dto.CVSearchDto;
 import telran.b7a.cv.dto.NewCVDto;
 import telran.b7a.cv.exceptions.CVNotFoundException;
+import telran.b7a.cv.exceptions.WrongCityException;
 import telran.b7a.cv.models.CV;
 import telran.b7a.employeeAccountig.dao.EmployeeAcconutingMongoRepository;
 import telran.b7a.employeeAccountig.dto.exceptions.EmployeeNotFoundException;
@@ -52,13 +55,13 @@ public class CVServiceImpl implements CVService {
 	@Override
 	public CVDto addCV(NewCVDto newCV, String login) {
 		CV cv = modelMapper.map(newCV, CV.class);
-		Double[] coordinates = getCoordinatesByCity(newCV.getLocation());
+		Double[] coordinates = getCoordinatesByCity(newCV.getAddress());
 		Double lon = coordinates[0];
 		Double lat = coordinates[1];
 		cv.setCoordinates(new Point(lon, lat));
 		Employee employee = employeeRepository.findById(login).orElseThrow(() -> new EmployeeNotFoundException());
-		ObjectId cvId = cvRepository.save(cv).getCvId();
-		employee.getCv_id().add(cvId.toHexString());
+		String cvId = cvRepository.save(cv).getCvId().toHexString();
+		employee.getCv_id().add(cvId);
 		employeeRepository.save(employee);
 		return modelMapper.map(cv, CVDto.class);
 	}
@@ -114,16 +117,8 @@ public class CVServiceImpl implements CVService {
 
 	@Override
 	public List<CVDto> getCVsByParamaters(CVSearchDto paramaters) {
-		Double[] coordinates = getCoordinatesByCity(paramaters.getLocation());
-		Point location = new Point(coordinates[0], coordinates[1]);
-		Distance radius = new Distance(paramaters.getDistance(), Metrics.KILOMETERS);
-		return cvRepository.findByCoordinatesNear(location, radius)
-				.filter(cv -> cv.getPosition().contains(paramaters.getPosition()))
-				.filter(cv -> cv.isRelocated() == paramaters.isReadyRelocate())
-				.filter(cv -> cv.getSkills().containsAll(paramaters.getSkills()))
-				.filter(cv -> cv.getOther().getSalaryExpectations() >= paramaters.getSalaryFrom()
-						&& cv.getOther().getSalaryExpectations() < paramaters.getSalaryTo())
-				.map(cv -> modelMapper.map(cv, CVDto.class)).collect(Collectors.toList());
+		Query query = new Query();
+		return null;
 	}
 
 	private CVDto setNull(CVDto response, String field) {
@@ -162,8 +157,14 @@ public class CVServiceImpl implements CVService {
 				.queryParam("appid", API_KEY);
 		RestTemplate restTemplate = new RestTemplate();
 		RequestEntity<String> requestEntity = new RequestEntity<>(HttpMethod.GET, builder.build().toUri());
-		ResponseEntity<List> responseEntity = restTemplate.exchange(requestEntity, List.class);
-		HashMap<String, Double> data = (HashMap<String, Double>) responseEntity.getBody().get(0);
+		ResponseEntity<List> responseEntity = null;
+		responseEntity = restTemplate.exchange(requestEntity, List.class);
+		HashMap<String, Double> data;
+		try {
+			data = (HashMap<String, Double>) responseEntity.getBody().get(0);
+		} catch (Exception e) {
+			throw new WrongCityException(city);
+		}
 		Double[] coordinates = { data.get("lon"), data.get("lat") };
 		return coordinates;
 	}
