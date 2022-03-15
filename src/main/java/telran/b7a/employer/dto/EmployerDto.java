@@ -16,7 +16,7 @@ import lombok.ToString;
 @ToString
 public class EmployerDto {
 	
-	String id;
+	String email;
 	ApplicantDto applicantInfo;
 	CompanyDto companyInfo;
 	Map<String, Set<String>> cvCollections;

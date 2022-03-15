@@ -5,13 +5,13 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import lombok.NoArgsConstructor;
 
-@ResponseStatus(code = HttpStatus.CONFLICT)
+@ResponseStatus(code = HttpStatus.BAD_REQUEST)
 @NoArgsConstructor
-public class CVExistException extends RuntimeException {/**
+public class WrongCityException extends RuntimeException {/**
 	 * 
 	 */
 	private static final long serialVersionUID = -6878819084308767014L;
-	public CVExistException(String cvID) {
-		super("CV " + cvID + " already exist");
+	public WrongCityException(String city) {
+		super("City " + city + " already exist");
 	}
 }

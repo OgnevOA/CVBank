@@ -13,7 +13,6 @@ import lombok.ToString;
 @ToString
 public class ApplicantDto {
 	
-	String email;
 	String firstName;
 	String lastName;
 	String position;

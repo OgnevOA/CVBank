@@ -20,16 +20,9 @@ public class CustomSecurity {
 		this.employeeRepo = employeeRepo;
 		this.employerRepo = employerRepo;
 	}
-
-	public boolean checkEmployeeCollectionAuthority(String companyId, String email) {
-		Employer employerA = employerRepo.findById(companyId).orElseThrow(() -> new EmployerNotFoundException());
-		Employer employerB = employerRepo.findByApplicantInfoEmailIgnoreCase(email);
-		return employerA.equals(employerB);
-	}
 	
 	public boolean checkCVAuthority(String cvid, String name) {
 		Employee employee = employeeRepo.findById(name).orElseThrow(() -> new EmployeeNotFoundException());
-		System.out.println(employee.getCvs().contains(cvid));
-		return employee.getCvs().contains(cvid);
+		return employee.getCv_id().contains(cvid);
 	}
 }

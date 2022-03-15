@@ -1,9 +1,6 @@
 package telran.b7a.employer.models;
 
-import org.springframework.data.annotation.Id;
-
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,11 +9,8 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(of = "email")
 public class Applicant  {
 	
-	@Id
-	String email;
 	String firstName;
 	String lastName;
 	String position;

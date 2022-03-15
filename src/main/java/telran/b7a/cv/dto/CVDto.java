@@ -27,11 +27,12 @@ public class CVDto {
 	String email;
 	@JsonInclude(Include.NON_NULL)
 	String phone;
+	int verificationLevel;
+	boolean isRelevant;
+	String isRelocated;
+	String salary;
+	String address;
 	String position;
-	String location;
-	int cvScore;
-	boolean isVerified;
-	boolean isRelocated;
 	String preambule;
 	Set<String> skills;
 	@JsonInclude(Include.NON_NULL)
@@ -40,5 +41,6 @@ public class CVDto {
 	OtherDto other;
 	@JsonInclude(Include.NON_NULL)
 	Set<String> links;
+	Integer template;
 
 }
