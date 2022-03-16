@@ -19,7 +19,7 @@ public class AuthConfig {
 		@Override
 		public void configure(WebSecurity web) {
 			web.ignoring()
-			.antMatchers(HttpMethod.POST, "/cvbank/employee/signup**", "/cvbank/employer/signup**", "/cvbank/notify/**");
+			.antMatchers(HttpMethod.POST, "/cvbank/notify/**", "/cvbank/employee/signup**", "/cvbank/employer/signup**");
 		}
 		
 		@Override
@@ -50,7 +50,7 @@ public class AuthConfig {
 					.authenticated()
 				.antMatchers("/cvbank/employee/{id}")							//Update Employee | Delete Employee | Get Employee
 					.access("#id == authentication.name")
-					//==================EMPLOYER==================
+					//==================EMPLOYER=================
 				.antMatchers("/cvbank/employer/signin")							//Login Employer
 					.authenticated()
 				.antMatchers("/cvbank/employer/login")							//Change login
@@ -76,7 +76,7 @@ public class AuthConfig {
 //		@Override
 //		public void configure(WebSecurity web) {
 //			web.ignoring()
-//			.antMatchers(HttpMethod.POST, "/cvbank/employee/register**");
+//			.antMatchers(HttpMethod.POST, "/cvbank/employee/signup**");
 //		}
 //		
 //		@Override
@@ -86,9 +86,13 @@ public class AuthConfig {
 //			http.sessionManagement()
 //				.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 //			http.authorizeRequests()
-//				.antMatchers("/cvbank/employee/login**")
+//				.antMatchers(HttpMethod.POST, "/cvbank/employee/signin")		//Login Employee
 //					.authenticated()
-//				.antMatchers("/cvbank/employee/{id}**")
+//				.antMatchers(HttpMethod.PUT, "/cvbank/employee/login")			//Change Employee Login
+//					.authenticated()
+//				.antMatchers(HttpMethod.PUT, "/cvbank/employee/pass")			//Change Employee Password
+//					.authenticated()
+//				.antMatchers("/cvbank/employee/{id}")							//Update Employee | Delete Employee | Get Employee
 //					.access("#id == authentication.name")
 //				.anyRequest()
 //					.authenticated();
@@ -101,7 +105,7 @@ public class AuthConfig {
 //		@Override
 //		public void configure(WebSecurity web) {
 //			web.ignoring()
-//			.antMatchers(HttpMethod.POST, "/cvbank/employer/register**");
+//			.antMatchers(HttpMethod.POST, "/cvbank/employer/signup**");
 //		}
 //		
 //		@Override
@@ -111,16 +115,22 @@ public class AuthConfig {
 //			http.sessionManagement()
 //				.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 //			http.authorizeRequests()
-//				.antMatchers("/cvbank/employer/login**")
-//					.authenticated()
-//				.antMatchers("/cvbank/employer/{id}**")
-//					.access("#id == authentication.name")
-//				.antMatchers("/cvbank/employer/{companyId}/collection**")
-//					.access("@customSecurity.checkEmployeeCollectionAuthority(#companyId, authentication.name)")
-//				.antMatchers("/cvbank/company/{companyId}**")
-//					.access("hasRole('EMPLOYER') or hasRole('ADMINISTRATOR')")
-//				.anyRequest()
-//					.authenticated();
+//			.antMatchers("/cvbank/employer/signin")							//Login Employer
+//				.authenticated()
+//			.antMatchers("/cvbank/employer/login")							//Change login
+//				.authenticated()
+//			.antMatchers("/cvbank/employer/pass")							//Change password
+//				.authenticated()
+//			.antMatchers("/cvbank/employer/{companyId}")					//Update Employer | Delete Employer
+//				.access("#companyId == authentication.name")
+//			.antMatchers(HttpMethod.PUT, "/cvbank/employer/{companyId}/collection/{collectionName}")		//Add CV Collection
+//				.access("#companyId == authentication.name")
+//			.antMatchers(HttpMethod.PUT, "/cvbank/employer/{companyId}/collection/{collectionName}/{cvId}")	//Add CV to collection
+//				.access("#companyId == authentication.name")
+//			.antMatchers(HttpMethod.GET, "/cvbank/employer/company/{companyName}")			//Find Employer by company name
+//				.authenticated()
+//			.anyRequest()
+//				.authenticated();
 //		}
 //	}
 }

@@ -17,11 +17,14 @@ import telran.b7a.employer.models.Employer;
 @Service
 public class UserDetailServiceImpl implements UserDetailsService {
 
-	@Autowired
 	EmployeeAcconutingMongoRepository employeeRepo;
-
-	@Autowired
 	EmployerMongoRepository employerRepo;
+	
+	@Autowired
+	public UserDetailServiceImpl(EmployeeAcconutingMongoRepository employeeRepo, EmployerMongoRepository employerRepo) {
+		this.employeeRepo = employeeRepo;
+		this.employerRepo = employerRepo;
+	}
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
