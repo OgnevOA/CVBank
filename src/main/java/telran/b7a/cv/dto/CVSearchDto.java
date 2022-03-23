@@ -17,14 +17,12 @@ public class CVSearchDto {
 	
 	String position;
 	Set<String> skills;
-	Integer salaryFrom;
-	Integer salaryTo;
-	@JsonProperty
-	boolean isMonthly;
+	Integer minSalary;
+	Integer maxSalary;
 	String location;
 	Integer distance;
 	@JsonProperty
-	boolean isReadyRelocate;
-	String cvScore;
+	boolean relocated;
+	int verifiedLevel;
 
 }

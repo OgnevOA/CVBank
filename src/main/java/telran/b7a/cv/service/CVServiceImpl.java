@@ -1,18 +1,19 @@
 package telran.b7a.cv.service;
 
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.geo.Distance;
 import org.springframework.data.geo.Metrics;
 import org.springframework.data.geo.Point;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.RequestEntity;
@@ -33,7 +34,7 @@ import telran.b7a.employeeAccountig.dto.exceptions.EmployeeNotFoundException;
 import telran.b7a.employeeAccountig.model.Employee;
 
 @Service
-public class CVServiceImpl implements CVService {
+public class CVServiceImpl<T> implements CVService {
 
 	@Value("${API_KEY}")
 	String API_KEY;
@@ -42,14 +43,16 @@ public class CVServiceImpl implements CVService {
 
 	CVRepository cvRepository;
 	EmployeeAcconutingMongoRepository employeeRepository;
+	MongoTemplate mongoTemplate;
 	ModelMapper modelMapper;
 
 	@Autowired
 	public CVServiceImpl(CVRepository cvRepository, ModelMapper modelMapper,
-			EmployeeAcconutingMongoRepository employeeRepository) {
+			EmployeeAcconutingMongoRepository employeeRepository, MongoTemplate mongoTemplate) {
 		this.cvRepository = cvRepository;
 		this.modelMapper = modelMapper;
 		this.employeeRepository = employeeRepository;
+		this.mongoTemplate = mongoTemplate;
 	}
 
 	@Override
@@ -72,9 +75,7 @@ public class CVServiceImpl implements CVService {
 		CVDto response = modelMapper.map(cv, CVDto.class);
 		Set<String> hideFields = cv.getHideFields();
 		if (!hideFields.isEmpty() && role.equalsIgnoreCase("Role_Employer")) {
-			for (String field : hideFields) {
-				response = setNull(response, field);
-			}
+			response = setAnonymousFields(hideFields, response);
 		}
 		return response;
 	}
@@ -103,9 +104,7 @@ public class CVServiceImpl implements CVService {
 		cv.setHideFields(anonymousFields);
 		cvRepository.save(cv);
 		CVDto response = modelMapper.map(cv, CVDto.class);
-		for (String field : anonymousFields) {
-			response = setNull(response, field);
-		}
+		response = setAnonymousFields(anonymousFields, response);
 		return response;
 	}
 
@@ -117,34 +116,38 @@ public class CVServiceImpl implements CVService {
 
 	@Override
 	public List<CVDto> getCVsByParamaters(CVSearchDto paramaters) {
-		Query query = new Query();
-		return null;
+		Query query = createQuery(paramaters);
+		List<CV> cvs = mongoTemplate.find(query, CV.class);
+		return cvs.stream().map(cv -> modelMapper.map(cv, CVDto.class)).collect(Collectors.toList());
 	}
 
-	private CVDto setNull(CVDto response, String field) {
-		if (field.equalsIgnoreCase("firstName")) {
-			response.setFirstName(null);
-			return response;
+	private Query createQuery(CVSearchDto paramaters) {
+		Query query = new Query();
+		if (paramaters.getLocation() != null) {
+			Double[] coordinates = getCoordinatesByCity(paramaters.getLocation());
+			Double lon = coordinates[0];
+			Double lat = coordinates[1];
+			Point point = new Point(lon, lat);
+			Distance distance = new Distance(paramaters.getDistance(), Metrics.KILOMETERS);
+			query.addCriteria(
+					Criteria.where("coordinates").nearSphere(point).maxDistance(distance.getNormalizedValue()));
 		}
-		if (field.equalsIgnoreCase("lastName")) {
-			response.setLastName(null);
-			return response;
+		if (paramaters.getPosition() != null) {
+			query.addCriteria(Criteria.where("position").regex(paramaters.getPosition(), "i"));
 		}
-
-		if (field.equalsIgnoreCase("phone")) {
-			response.setPhone(null);
-			return response;
+		if (paramaters.getSkills() != null) {
+			query.addCriteria(Criteria.where("skills").all(paramaters.getSkills()));
 		}
-		if (field.equalsIgnoreCase("links")) {
-			response.setLinks(null);
-			return response;
+		if (paramaters.getMinSalary() != 0) {
+			query.addCriteria(Criteria.where("salary").gte(paramaters.getMinSalary()).lt(paramaters.getMaxSalary()));
 		}
-		if (field.equalsIgnoreCase("experience")) {
-			response.setExperience(null);
-			return response;
+		if (paramaters.getVerifiedLevel() != 0) {
+			query.addCriteria(Criteria.where("verificationLevel").is(paramaters.getVerifiedLevel()));
 		}
-		return response;
-
+		if (paramaters.isRelocated()) {
+			// TODO
+		}
+		return query;
 	}
 
 	private CV findCVbyId(String cvId) {
@@ -167,6 +170,25 @@ public class CVServiceImpl implements CVService {
 		}
 		Double[] coordinates = { data.get("lon"), data.get("lat") };
 		return coordinates;
+	}
+
+	private CVDto setAnonymousFields(Set<String> anonymousFields, CVDto response) {
+		Class<? extends CVDto> clazz = response.getClass();
+		for (String fieldName : anonymousFields) {
+			Field field = null;
+			try {
+				field = clazz.getDeclaredField(fieldName);
+			} catch (NoSuchFieldException | SecurityException e1) {
+				e1.printStackTrace();
+			}
+			field.setAccessible(true);
+			try {
+				field.set(response, null);
+			} catch (IllegalArgumentException | IllegalAccessException e) {
+				e.printStackTrace();
+			}
+		}
+		return response;
 	}
 
 }

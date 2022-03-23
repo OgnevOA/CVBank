@@ -42,5 +42,6 @@ public class CVDto {
 	@JsonInclude(Include.NON_NULL)
 	Set<String> links;
 	Integer template;
+	
 
 }
