@@ -6,19 +6,19 @@ import org.springframework.stereotype.Service;
 import telran.b7a.cv.dao.CVRepository;
 import telran.b7a.cv.exceptions.CVNotFoundException;
 import telran.b7a.cv.models.CV;
-import telran.b7a.employeeAccountig.dao.EmployeeAcconutingMongoRepository;
-import telran.b7a.employeeAccountig.dto.exceptions.EmployeeNotFoundException;
-import telran.b7a.employeeAccountig.model.Employee;
+import telran.b7a.employee.dao.EmployeeMongoRepository;
+import telran.b7a.employee.dto.exceptions.EmployeeNotFoundException;
+import telran.b7a.employee.model.Employee;
 import telran.b7a.notifications.interfaces.NotifyUser;
 
 @Service
 public class NotificationServiceImpl implements NotificationService {
 	NotifyUser notifyUser;
-	EmployeeAcconutingMongoRepository employeeRepo;
+	EmployeeMongoRepository employeeRepo;
 	CVRepository cvRepo;
 
 	@Autowired
-	public NotificationServiceImpl(NotifyUser notifyUser, EmployeeAcconutingMongoRepository employeeRepo,
+	public NotificationServiceImpl(NotifyUser notifyUser, EmployeeMongoRepository employeeRepo,
 			CVRepository cvRepo) {
 		this.notifyUser = notifyUser;
 		this.employeeRepo = employeeRepo;

@@ -8,36 +8,49 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import telran.b7a.employeeAccountig.dao.EmployeeAcconutingMongoRepository;
-import telran.b7a.employeeAccountig.dto.exceptions.EmployeeNotFoundException;
-import telran.b7a.employeeAccountig.model.Employee;
+import telran.b7a.admin.dao.AdminMongoRepository;
+import telran.b7a.admin.model.Admin;
+import telran.b7a.employee.dao.EmployeeMongoRepository;
+import telran.b7a.employee.dto.exceptions.EmployeeNotFoundException;
+import telran.b7a.employee.model.Employee;
 import telran.b7a.employer.dao.EmployerMongoRepository;
 import telran.b7a.employer.models.Employer;
 
 @Service
 public class UserDetailServiceImpl implements UserDetailsService {
 
-	EmployeeAcconutingMongoRepository employeeRepo;
+	EmployeeMongoRepository employeeRepo;
 	EmployerMongoRepository employerRepo;
+	AdminMongoRepository adminRepo;
 
 	@Autowired
-	public UserDetailServiceImpl(EmployeeAcconutingMongoRepository employeeRepo, EmployerMongoRepository employerRepo) {
+	public UserDetailServiceImpl(EmployeeMongoRepository employeeRepo, EmployerMongoRepository employerRepo, AdminMongoRepository adminRepo) {
 		this.employeeRepo = employeeRepo;
 		this.employerRepo = employerRepo;
+		this.adminRepo = adminRepo;
 	}
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		User user;
-		Employer employerAccount = employerRepo.findById(username).orElse(null);
-		if (employerAccount != null) {
-			user = new User(username, employerAccount.getPassword(),
+		if (employerRepo.existsById(username)) {
+			Employer employer = employerRepo.findById(username).orElse(null);
+			user = new User(username, employer.getPassword(),
 					AuthorityUtils.createAuthorityList("ROLE_EMPLOYER"));
-			// TODO add employers roles (approved/non approved)
-		} else {
-			Employee employee = employeeRepo.findById(username).orElseThrow(() -> new EmployeeNotFoundException());
-			user = new User(username, employee.getPassword(), AuthorityUtils.createAuthorityList("ROLE_EMPLOYEE"));
+			return user;
 		}
-		return user;
+		if (employeeRepo.existsById(username)) {
+			Employee employee = employeeRepo.findById(username).orElse(null);
+			user = new User(username, employee.getPassword(),
+					AuthorityUtils.createAuthorityList("ROLE_EMPLOYEE"));
+			return user;
+		}
+		if (adminRepo.existsById(username)) {
+			Admin admin = adminRepo.findById(username).orElse(null);
+			user = new User(username, admin.getPassword(),
+					AuthorityUtils.createAuthorityList("ROLE_ADMINISTRATOR"));
+			return user;
+		}
+		return null;
 	}
 }
