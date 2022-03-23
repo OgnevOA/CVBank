@@ -53,9 +53,8 @@ public class CVController {
 		return cvService.getCV(cvId, role);
 	}
 
-	@GetMapping("/cvSearch")
+	@GetMapping("/cvs/aggregate")
 	public List<CVDto> getCVsByParameters(@RequestBody CVSearchDto paramaters) {
-		// TODO
 		return cvService.getCVsByParamaters(paramaters);
 	}
 

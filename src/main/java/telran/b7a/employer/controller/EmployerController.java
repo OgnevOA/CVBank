@@ -70,7 +70,7 @@ public class EmployerController {
 	public EmployerDto changePassword(Authentication authentication, @RequestHeader("X-Password") String newPassword) {
 		return employerService.changePassword(authentication.getName(), newPassword);
 
-	}
+	} 
 
 	@PutMapping("/collection/{collectionName}")
 	public AddCVDto addCvCollection(Authentication authentication, @PathVariable String collectionName) {
@@ -83,7 +83,7 @@ public class EmployerController {
 		return employerService.addCvToCollection(authentication.getName(), collectionName, cvId);
 	}
 
-	@DeleteMapping()
+	@DeleteMapping
 	public void removeEmployer(Authentication authentications) {
 		employerService.removeEmployer(authentications.getName());
 	}

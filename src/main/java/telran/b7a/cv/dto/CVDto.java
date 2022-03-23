@@ -11,7 +11,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import telran.b7a.cv.enums.LevelVerification;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -43,5 +42,6 @@ public class CVDto {
 	@JsonInclude(Include.NON_NULL)
 	Set<String> links;
 	Integer template;
+	
 
 }
