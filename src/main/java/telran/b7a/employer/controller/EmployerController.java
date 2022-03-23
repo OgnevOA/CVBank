@@ -56,7 +56,7 @@ public class EmployerController {
 		return employerService.getEmployerById(email);
 	}
 
-	@PutMapping
+	@PutMapping("/{companyId}")
 	public EmployerDto updateEmployer(Authentication authentication, @RequestBody UpdateEmployerDto newCredentials) {
 		return employerService.updateEmployer(authentication.getName(), newCredentials);
 	}

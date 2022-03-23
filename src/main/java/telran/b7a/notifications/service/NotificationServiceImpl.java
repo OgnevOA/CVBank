@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import telran.b7a.cv.dao.CVRepository;
-import telran.b7a.cv.enums.LevelConfirm;
 import telran.b7a.cv.exceptions.CVNotFoundException;
 import telran.b7a.cv.models.CV;
 import telran.b7a.employeeAccountig.dao.EmployeeAcconutingMongoRepository;
@@ -36,7 +35,7 @@ public class NotificationServiceImpl implements NotificationService {
 		Employee employee = employeeRepo.findById(userId).orElseThrow(() -> new EmployeeNotFoundException());
 		if (employee.getCv_id().contains(cvId)) {
 			CV resume = cvRepo.findById(cvId).orElseThrow(() -> new CVNotFoundException(cvId));
-			resume.setCvConfirm(LevelConfirm.CONFIRMED);
+			resume.setRelevant(true);
 			cvRepo.save(resume);
 			System.out.println("CV for " + resume.getPosition() + " confirmed!");
 		}
