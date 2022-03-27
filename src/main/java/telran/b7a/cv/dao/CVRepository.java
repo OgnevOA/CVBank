@@ -1,25 +1,18 @@
 package telran.b7a.cv.dao;
 
-import java.util.List;
-import java.util.stream.Stream;
-
-import org.springframework.data.geo.Distance;
-import org.springframework.data.geo.Point;
-import org.springframework.data.mongodb.core.aggregation.AggregationResults;
-import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
-
 import telran.b7a.cv.models.CV;
+
+import java.util.Collection;
+import java.util.stream.Stream;
 
 public interface CVRepository extends MongoRepository<CV, String> {
 
-	Stream<CV> findBycvIdIn(List<String> cvsId);
+    Stream<CV> findBycvIdIn(Collection<String> cvsId);
 
-	Stream<CV> findByCoordinatesNear(Point point, Distance distance);
-	
-	Stream<CV> findByPosition(String position);
-	
-	
+    Stream<CV> findByisPublishedTrue();
+
+    Stream<CV> findBydatePublished(String date);
 
 //	@Aggregation(pipeline = {
 //			"{$geoNear: {near : {type: 'Point', coordinates: [ ?0, ?1 ]}, distanceField: 'dist.calculated',\r\n"
