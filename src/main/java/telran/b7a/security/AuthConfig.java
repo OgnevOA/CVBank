@@ -18,8 +18,12 @@ public class AuthConfig {
 		
 		@Override
 		public void configure(WebSecurity web) {
-			web.ignoring()
-			.antMatchers(HttpMethod.POST, "/cvbank/notify/**", "/cvbank/employee/signup**", "/cvbank/employer/signup**", "/cvbank/admin/signup**");
+//			web.ignoring()
+//			.antMatchers(HttpMethod.POST, "/cvbank/employee/signup**", "/cvbank/employer/signup**", "/cvbank/admin/signup**")
+//					.and()
+//					.ignoring()
+//					.antMatchers("/cvbank/notify**");
+			web.ignoring().antMatchers("/**");
 		}
 		
 		@Override
