@@ -29,9 +29,9 @@ import telran.b7a.cv.dto.NewCVDto;
 import telran.b7a.cv.exceptions.CVNotFoundException;
 import telran.b7a.cv.exceptions.WrongCityException;
 import telran.b7a.cv.models.CV;
-import telran.b7a.employeeAccountig.dao.EmployeeAcconutingMongoRepository;
-import telran.b7a.employeeAccountig.dto.exceptions.EmployeeNotFoundException;
-import telran.b7a.employeeAccountig.model.Employee;
+import telran.b7a.employee.dao.EmployeeMongoRepository;
+import telran.b7a.employee.dto.exceptions.EmployeeNotFoundException;
+import telran.b7a.employee.model.Employee;
 
 @Service
 public class CVServiceImpl<T> implements CVService {
@@ -42,13 +42,13 @@ public class CVServiceImpl<T> implements CVService {
 	String BASE_URL;
 
 	CVRepository cvRepository;
-	EmployeeAcconutingMongoRepository employeeRepository;
+	EmployeeMongoRepository employeeRepository;
 	MongoTemplate mongoTemplate;
 	ModelMapper modelMapper;
 
 	@Autowired
 	public CVServiceImpl(CVRepository cvRepository, ModelMapper modelMapper,
-			EmployeeAcconutingMongoRepository employeeRepository, MongoTemplate mongoTemplate) {
+                         EmployeeMongoRepository employeeRepository, MongoTemplate mongoTemplate) {
 		this.cvRepository = cvRepository;
 		this.modelMapper = modelMapper;
 		this.employeeRepository = employeeRepository;
