@@ -49,25 +49,7 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public AdminSignInResponseDto adminSignIn(String login) {
         Admin admin = adminRepo.findById(login).orElseThrow(AdminNotFoundException::new);
-        CompaniesDto companies = CompaniesDto.builder()
-                .archive(admin.getCompanies().getArchive())
-                .rejected(admin.getCompanies().getRejected())
-                .requests(admin.getCompanies().getRequests())
-                .build();
-        SkillsVerificationDto skills = SkillsVerificationDto.builder()
-                .pending(admin.getSkillsVerification().getPending())
-                .veryfied(admin.getSkillsVerification().getVeryfied())
-                .rejected(admin.getSkillsVerification().getRejected())
-                .requests(admin.getSkillsVerification().getRequests())
-                .build();
-        List<AddUpdateExpertDto> experts = admin.getExperts().stream()
-                .map(e -> modelMapper.map(e, AddUpdateExpertDto.class))
-                .collect(Collectors.toList());
-        return AdminSignInResponseDto.builder()
-                .companies(companies)
-                .skillsVerification(skills)
-                .experts(experts)
-                .build();
+        return new AdminSignInResponseDto(admin);
     }
 
     @Override
@@ -93,22 +75,7 @@ public class AdminServiceImpl implements AdminService {
         admin.getExperts().remove(expert);
         admin.getExperts().add(expert);
         adminRepo.save(admin);
-        CompaniesDto companies = CompaniesDto.builder()
-                .archive(admin.getCompanies().getArchive())
-                .rejected(admin.getCompanies().getRejected())
-                .requests(admin.getCompanies().getRequests())
-                .build();
-        SkillsVerificationDto skills = SkillsVerificationDto.builder()
-                .pending(admin.getSkillsVerification().getPending())
-                .veryfied(admin.getSkillsVerification().getVeryfied())
-                .rejected(admin.getSkillsVerification().getRejected())
-                .requests(admin.getSkillsVerification().getRequests())
-                .build();
-        return AdminSignInResponseDto.builder()
-                .experts(admin.getExperts().stream().map(e -> modelMapper.map(e, AddUpdateExpertDto.class)).collect(Collectors.toList()))
-                .companies(companies)
-                .skillsVerification(skills)
-                .build();
+        return new AdminSignInResponseDto(admin);
     }
 
     @Override
