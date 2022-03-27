@@ -1,4 +1,8 @@
+<<<<<<< HEAD:src/main/java/telran/b7a/employee/dto/exceptions/EmployeeNotFoundException.java
+package telran.b7a.employee.dto.exceptions;
+=======
 package telran.b7a.employeeAccountig.exceptions;
+>>>>>>> nikita:src/main/java/telran/b7a/employee/exceptions/EmployeeNotFoundException.java
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

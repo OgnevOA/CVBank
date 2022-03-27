@@ -18,8 +18,12 @@ public class AuthConfig {
 		
 		@Override
 		public void configure(WebSecurity web) {
-			web.ignoring()
-			.antMatchers(HttpMethod.POST, "/cvbank/notify/**", "/cvbank/employee/signup**", "/cvbank/employer/signup**");
+//			web.ignoring()
+//			.antMatchers(HttpMethod.POST, "/cvbank/employee/signup**", "/cvbank/employer/signup**", "/cvbank/admin/signup**")
+//					.and()
+//					.ignoring()
+//					.antMatchers("/cvbank/notify**");
+			web.ignoring().antMatchers("/**");
 		}
 		
 		@Override
@@ -65,6 +69,11 @@ public class AuthConfig {
 					.access("#companyId == authentication.name")
 				.antMatchers(HttpMethod.GET, "/cvbank/employer/company/{companyName}")			//Find Employer by company name
 					.authenticated()
+					//==================ADMIN=================
+				.antMatchers("/cvbank/admin/signin")								//Login Admin
+					.permitAll()
+				.antMatchers("/cvbank/admin/expert")								//Add expert | Update expert
+					.access("hasRole('ADMINISTRATOR')")
 				.anyRequest()
 					.authenticated();
 		}

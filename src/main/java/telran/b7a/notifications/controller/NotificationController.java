@@ -1,13 +1,7 @@
 package telran.b7a.notifications.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.*;
 import telran.b7a.notifications.service.NotificationService;
 
 @RestController
@@ -22,8 +16,8 @@ public class NotificationController {
 		this.notificationService = notificationService;
 	}
 
-	@PostMapping("/{userId}/{cvId}")
-	public void confirmUserCV(@PathVariable String cvId, @PathVariable String userId) {
-		notificationService.recieveCVConfirmation(cvId, userId);
+	@GetMapping("/{token}")
+	public void confirmUserCV(@PathVariable String token) {
+		notificationService.recieveCVConfirmation(token);
 	}
 }
