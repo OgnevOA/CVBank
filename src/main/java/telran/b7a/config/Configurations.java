@@ -10,15 +10,16 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 public class Configurations {
-	@Bean
-	public ModelMapper getModelMapper() {
-		ModelMapper modelMapper = new ModelMapper();
-		modelMapper.getConfiguration().setFieldAccessLevel(AccessLevel.PRIVATE).setFieldMatchingEnabled(true)
-				.setMatchingStrategy(MatchingStrategies.STRICT);
-		return modelMapper;
-	}
-	@Bean
-	public PasswordEncoder getPasswordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
+    @Bean
+    public ModelMapper getModelMapper() {
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setFieldAccessLevel(AccessLevel.PRIVATE).setFieldMatchingEnabled(true)
+                .setMatchingStrategy(MatchingStrategies.STRICT);
+        return modelMapper;
+    }
+
+    @Bean
+    public PasswordEncoder getPasswordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 }

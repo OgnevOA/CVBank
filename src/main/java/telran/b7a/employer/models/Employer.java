@@ -1,18 +1,14 @@
 package telran.b7a.employer.models;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
+import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -23,21 +19,22 @@ import lombok.ToString;
 @ToString
 public class Employer {
 
-	@Id
-	String email;
-	Applicant applicantInfo;
-	Company companyInfo;
-	String password;
-	Map<String, Set<String>> cvCollections;
-	
-	public Employer(String email, Applicant applicantInfo, Company companyInfo, String password) {
-		this.email = email;
-		this.applicantInfo = applicantInfo;
-		this.companyInfo = companyInfo;
-		this.password = password;
-		this.cvCollections = new HashMap<>();
-	}
-	
-	
+    @Id
+    @NotNull
+    @Email
+    String email;
+    Applicant applicantInfo;
+    Company companyInfo;
+    @NotNull
+    String password;
+    Map<String, Collection<String>> cvCollections;
+
+    public Employer(String email, Applicant applicantInfo, Company companyInfo, String password) {
+        this.email = email;
+        this.applicantInfo = applicantInfo;
+        this.companyInfo = companyInfo;
+        this.password = password;
+        this.cvCollections = new HashMap<>();
+    }
 
 }

@@ -7,11 +7,10 @@ import lombok.NoArgsConstructor;
 
 @ResponseStatus(code = HttpStatus.CONFLICT)
 @NoArgsConstructor
-public class CVExistException extends RuntimeException {/**
-	 * 
-	 */
-	private static final long serialVersionUID = -6878819084308767014L;
-	public CVExistException(String cvID) {
-		super("CV " + cvID + " already exist");
-	}
+public class CVExistException extends RuntimeException {
+    /**
+     *
+     */
+    private static final long serialVersionUID = -6878819084308767014L;
+
 }
