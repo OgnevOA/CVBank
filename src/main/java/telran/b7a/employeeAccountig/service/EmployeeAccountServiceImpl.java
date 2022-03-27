@@ -9,8 +9,8 @@ import telran.b7a.employeeAccountig.dao.EmployeeAcconutingMongoRepository;
 import telran.b7a.employeeAccountig.dto.InfoEmployeeDto;
 import telran.b7a.employeeAccountig.dto.RegisterEmployeeDto;
 import telran.b7a.employeeAccountig.dto.UpdateEmployeeDto;
-import telran.b7a.employeeAccountig.dto.exceptions.EmployeeAlreadyExistException;
-import telran.b7a.employeeAccountig.dto.exceptions.EmployeeNotFoundException;
+import telran.b7a.employeeAccountig.exceptions.EmployeeAlreadyExistException;
+import telran.b7a.employeeAccountig.exceptions.EmployeeNotFoundException;
 import telran.b7a.employeeAccountig.model.Employee;
 
 @Service

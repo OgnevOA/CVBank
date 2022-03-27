@@ -52,7 +52,7 @@ public class AuthConfig {
 					.access("#id == authentication.name")
 					//==================EMPLOYER=================
 				.antMatchers("/cvbank/employer/signin")							//Login Employer
-					.authenticated()
+					.permitAll()
 				.antMatchers("/cvbank/employer/login")							//Change login
 					.authenticated()
 				.antMatchers("/cvbank/employer/pass")							//Change password

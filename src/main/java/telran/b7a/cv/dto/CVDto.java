@@ -19,6 +19,7 @@ import lombok.ToString;
 @ToString
 public class CVDto {
 
+	@JsonInclude(Include.NON_NULL)
 	String cvId;
 	@JsonInclude(Include.NON_NULL)
 	String firstName;

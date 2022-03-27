@@ -7,13 +7,11 @@ import lombok.NoArgsConstructor;
 
 @ResponseStatus(code = HttpStatus.NOT_FOUND)
 @NoArgsConstructor
-public class CVNotFoundException extends RuntimeException {/**
-	 * 
-	 */
-	private static final long serialVersionUID = 5635370307230854544L;
-	public CVNotFoundException(String cvId) {
-		super("CV " + cvId + " not exist");
-	}
+public class CVNotFoundException extends RuntimeException {
+    /**
+     *
+     */
+    private static final long serialVersionUID = 5635370307230854544L;
 
 
 }
