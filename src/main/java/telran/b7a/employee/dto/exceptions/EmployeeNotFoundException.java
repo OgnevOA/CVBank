@@ -1,8 +1,5 @@
-<<<<<<< HEAD:src/main/java/telran/b7a/employee/dto/exceptions/EmployeeNotFoundException.java
 package telran.b7a.employee.dto.exceptions;
-=======
-package telran.b7a.employeeAccountig.exceptions;
->>>>>>> nikita:src/main/java/telran/b7a/employee/exceptions/EmployeeNotFoundException.java
+
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -10,9 +7,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ResponseStatus(HttpStatus.NOT_FOUND)
 public class EmployeeNotFoundException extends RuntimeException {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -1909503781812806215L;
+    /**
+     *
+     */
+    private static final long serialVersionUID = -1909503781812806215L;
 
 }

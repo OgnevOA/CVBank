@@ -13,11 +13,11 @@ import telran.b7a.cv.dao.CVRepository;
 import telran.b7a.cv.dto.CVDto;
 import telran.b7a.cv.dto.CVSearchDto;
 import telran.b7a.cv.dto.NewCVDto;
-import telran.b7a.cv.exceptions.CVNotFoundException;
+import telran.b7a.cv.dto.exceptions.CVNotFoundException;
 import telran.b7a.cv.models.CV;
-import telran.b7a.employeeAccountig.dao.EmployeeAcconutingMongoRepository;
-import telran.b7a.employeeAccountig.exceptions.EmployeeNotFoundException;
-import telran.b7a.employeeAccountig.model.Employee;
+import telran.b7a.employee.dao.EmployeeMongoRepository;
+import telran.b7a.employee.dto.exceptions.EmployeeNotFoundException;
+import telran.b7a.employee.model.Employee;
 
 import java.lang.reflect.Field;
 import java.time.LocalDate;
@@ -32,7 +32,7 @@ public class CVServiceImpl implements CVService {
 
 
     CVRepository cvRepository;
-    EmployeeAcconutingMongoRepository employeeRepository;
+    EmployeeMongoRepository employeeRepository;
     WeatherService weatherService;
     MongoTemplate mongoTemplate;
     ModelMapper modelMapper;
@@ -40,7 +40,7 @@ public class CVServiceImpl implements CVService {
     @Autowired
     public CVServiceImpl(CVRepository cvRepository,
                          ModelMapper modelMapper,
-                         EmployeeAcconutingMongoRepository employeeRepository,
+                         EmployeeMongoRepository employeeRepository,
                          MongoTemplate mongoTemplate,
                          WeatherService weatherService) {
         this.cvRepository = cvRepository;

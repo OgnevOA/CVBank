@@ -1,8 +1,5 @@
-<<<<<<< HEAD:src/main/java/telran/b7a/employee/dto/exceptions/EmployeeAlreadyExistException.java
 package telran.b7a.employee.dto.exceptions;
-=======
-package telran.b7a.employeeAccountig.exceptions;
->>>>>>> nikita:src/main/java/telran/b7a/employee/exceptions/EmployeeAlreadyExistException.java
+
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -10,9 +7,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ResponseStatus(HttpStatus.CONFLICT)
 public class EmployeeAlreadyExistException extends RuntimeException {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -2197271392473526853L;
+    /**
+     *
+     */
+    private static final long serialVersionUID = -2197271392473526853L;
 
 }

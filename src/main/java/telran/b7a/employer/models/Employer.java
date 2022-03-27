@@ -1,11 +1,8 @@
 package telran.b7a.employer.models;
 
 import lombok.*;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotNull;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,13 +16,9 @@ import java.util.Map;
 @ToString
 public class Employer {
 
-    @Id
-    @NotNull
-    @Email
     String email;
     Applicant applicantInfo;
     Company companyInfo;
-    @NotNull
     String password;
     Map<String, Collection<String>> cvCollections;
 
