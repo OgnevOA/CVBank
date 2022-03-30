@@ -9,7 +9,6 @@ import org.springframework.data.mongodb.core.index.GeoSpatialIndexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -32,7 +31,7 @@ public class CV {
     int verificationLevel;
     boolean isRelevant;
     String isRelocated;
-    String salary;
+    int salary;
     String address;
     String position;
     String preambule;
@@ -46,16 +45,10 @@ public class CV {
 
     @GeoSpatialIndexed(type = GeoSpatialIndexType.GEO_2DSPHERE)
     Point coordinates;
-    String dateCreated = LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-    String datePublished = LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+    LocalDate dateCreated = LocalDate.now();
+    LocalDate datePublished;
     boolean isPublished;
     Set<String> hideFields = new HashSet<>();
-
-    public void setDatePublished() {
-        this.datePublished = LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-    }
-
-
 }
 
 

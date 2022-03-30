@@ -34,7 +34,7 @@ public class AuthConfig {
                     .antMatchers(HttpMethod.DELETE, "/cvbank/cv/{cvid}")    //Delete CV
                     .access("@customSecurity.checkCVAuthority(#cvid, authentication.name)")
                     .antMatchers(HttpMethod.GET, "/cvbank/cv/{cvid}")        //Get CV
-                    .access("hasRole('ADMINISTRATOR') or hasRole('EMPLOYER') or @customSecurity.checkCVAuthority(#cvid, authentication.name)")
+                    .access("hasRole('ADMINISTRATOR') or hasRole('EMPLOYER') or @customSecurity.checkCVAuthority(#  cvid, authentication.name)")
                     .antMatchers(HttpMethod.PUT, "/cvbank/cv/{cvid}")        //Update CV
                     .access("@customSecurity.checkCVAuthority(#cvid, authentication.name)")
                     .antMatchers("/cvbank/cv/anonymizer/{cvid}")            //Anonymize CV

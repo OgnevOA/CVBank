@@ -1,56 +1,38 @@
 package telran.b7a;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import telran.b7a.employee.model.Employee;
+import telran.b7a.employee.service.EmployeeAccountServiceImpl;
 
-import telran.b7a.employer.dao.EmployerMongoRepository;
-import telran.b7a.employer.dto.AddressDto;
-import telran.b7a.employer.dto.ApplicantDto;
-import telran.b7a.employer.dto.CompanyDto;
-import telran.b7a.employer.dto.EmployerDto;
-import telran.b7a.employer.dto.NewEmployerDto;
-import telran.b7a.employer.service.EmployerService;
+import java.util.HashSet;
 
-@SpringBootTest
+@DataMongoTest
+@ExtendWith(SpringExtension.class)
 class CvbankApplicationTests {
 
-	EmployerMongoRepository employersRepository;
-	EmployerService employerService;
+    MongoTemplate mongoTemplate;
+    EmployeeAccountServiceImpl employeeService;
 
-	NewEmployerDto testNewEmployerDto;
-	ApplicantDto testApplicant = new ApplicantDto("Mary", "Star", "HR", "+972-55-111-11-15");
-	AddressDto testAddres = new AddressDto("USA", "New York", "Manhattan", 1, 100000);
-	CompanyDto testCompany = new CompanyDto("Company", "company.com", "+972-55-111-11-01", testAddres);
-	String testPassword = "0000";
-	Map<String, List<String>> cvCollectionTest = new HashMap<>();
-	EmployerDto employerTestDto;
 
-	@Autowired
-	public CvbankApplicationTests(EmployerMongoRepository employersRepository, EmployerService employerService) {
-		this.employersRepository = employersRepository;
-		this.employerService = employerService;
-	}
+    @BeforeEach
+    public void initial() {
+        Employee employee = Employee.builder()
+                .email("peter@mail.com")
+                .password("123456")
+                .firstName("Peter")
+                .lastName("Parker")
+                .cv_id(new HashSet<>())
+                .build();
+    }
 
-	@BeforeEach
-	void setUp() throws Exception {
+    @Test
+    public void getEmployee() {
 
-	}
 
-	@Test
-	public void testAdd() {
-
-	}
-
-	@AfterEach
-	void clear() {
-
-	}
-
+    }
 }
