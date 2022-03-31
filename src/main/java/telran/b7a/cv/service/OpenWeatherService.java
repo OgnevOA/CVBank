@@ -7,13 +7,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
-import telran.b7a.cv.exceptions.WrongCityException;
+import telran.b7a.cv.dto.exceptions.WrongCityException;
 
 import java.util.HashMap;
 import java.util.List;
 
 @Service(value = "openWeather")
-public class OpenWeatherService implements  WeatherService{
+public class OpenWeatherService implements WeatherService {
 
 
     @Value("${API_KEY}")

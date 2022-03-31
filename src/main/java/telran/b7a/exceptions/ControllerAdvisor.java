@@ -5,9 +5,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import telran.b7a.employer.exceptions.EmployerExistException;
-import telran.b7a.employer.exceptions.EmployerNotFoundException;
-import telran.b7a.employer.exceptions.LoginAlreadyUsedException;
+import telran.b7a.cv.dto.exceptions.WrongCityException;
+import telran.b7a.employer.dto.exceptions.EmployerExistException;
+import telran.b7a.employer.dto.exceptions.EmployerNotFoundException;
+import telran.b7a.employer.dto.exceptions.LoginAlreadyUsedException;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -50,5 +51,14 @@ public class ControllerAdvisor {
         });
         body.put("timestamp", LocalDateTime.now());
         return new ResponseEntity<>(body, HttpStatus.NOT_ACCEPTABLE);
+
+    }
+
+    @ExceptionHandler(WrongCityException.class)
+    public ResponseEntity<Object> handleWrongCityException() {
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("message", "City in field address not exist");
+        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
 }

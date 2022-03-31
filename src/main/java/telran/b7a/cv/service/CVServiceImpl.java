@@ -13,15 +13,14 @@ import telran.b7a.cv.dao.CVRepository;
 import telran.b7a.cv.dto.CVDto;
 import telran.b7a.cv.dto.CVSearchDto;
 import telran.b7a.cv.dto.NewCVDto;
-import telran.b7a.cv.exceptions.CVNotFoundException;
+import telran.b7a.cv.dto.exceptions.CVNotFoundException;
 import telran.b7a.cv.models.CV;
-import telran.b7a.employeeAccountig.dao.EmployeeAcconutingMongoRepository;
-import telran.b7a.employeeAccountig.exceptions.EmployeeNotFoundException;
-import telran.b7a.employeeAccountig.model.Employee;
+import telran.b7a.employee.dao.EmployeeMongoRepository;
+import telran.b7a.employee.dto.exceptions.EmployeeNotFoundException;
+import telran.b7a.employee.model.Employee;
 
 import java.lang.reflect.Field;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -32,7 +31,7 @@ public class CVServiceImpl implements CVService {
 
 
     CVRepository cvRepository;
-    EmployeeAcconutingMongoRepository employeeRepository;
+    EmployeeMongoRepository employeeRepository;
     WeatherService weatherService;
     MongoTemplate mongoTemplate;
     ModelMapper modelMapper;
@@ -40,14 +39,13 @@ public class CVServiceImpl implements CVService {
     @Autowired
     public CVServiceImpl(CVRepository cvRepository,
                          ModelMapper modelMapper,
-                         EmployeeAcconutingMongoRepository employeeRepository,
-                         MongoTemplate mongoTemplate,
-                         WeatherService weatherService) {
+                         EmployeeMongoRepository employeeRepository,
+                         WeatherService weatherService, MongoTemplate mongoTemplate) {
         this.cvRepository = cvRepository;
         this.modelMapper = modelMapper;
         this.employeeRepository = employeeRepository;
-        this.mongoTemplate = mongoTemplate;
         this.weatherService = weatherService;
+        this.mongoTemplate = mongoTemplate;
     }
 
     @Override
@@ -88,7 +86,7 @@ public class CVServiceImpl implements CVService {
     public CVDto publishCV(String cvId) {
         CV cv = findCVbyId(cvId);
         cv.setPublished(true);
-        cv.setDatePublished();
+        cv.setDatePublished(LocalDate.now().plusDays(14));
         cvRepository.save(cv);
         return modelMapper.map(cv, CVDto.class);
     }
@@ -128,8 +126,8 @@ public class CVServiceImpl implements CVService {
 
     @Override
     public List<CVDto> getPublishedCVsDateExpired() {
-        String dateExpired = LocalDate.now().minusDays(14).format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-        return cvRepository.findBydatePublished(dateExpired)
+        LocalDate date = LocalDate.now();
+        return cvRepository.findBydatePublished(date)
                 .map(cv -> modelMapper.map(cv, CVDto.class))
                 .collect(Collectors.toList());
     }
@@ -164,7 +162,7 @@ public class CVServiceImpl implements CVService {
             query.addCriteria(Criteria.where("verificationLevel").is(paramaters.getVerifiedLevel()));
         }
         if (paramaters.isRelocated()) {
-            // TODO
+            query.addCriteria(Criteria.where("isRelocated").ne(null));
         }
         return query;
     }
