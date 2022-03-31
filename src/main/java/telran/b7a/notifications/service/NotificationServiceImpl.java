@@ -34,18 +34,16 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public void recieveCVConfirmation(String token) {
+    public String recieveCVConfirmation(String token) {
         NotificationRecord record = notificationRepo.findById(token).orElseThrow(EmployeeNotFoundException::new);
-        System.out.println(record.getExpirationDate().isAfter(LocalDate.now()));
-        System.out.println(record.getExpirationDate());
-        System.out.println(LocalDate.now());
         if (record.getExpirationDate().isAfter(LocalDate.now())) {
-            CV resume = cvRepo.findById(record.getCvId()).orElseThrow(() -> new CVNotFoundException());
+            CV resume = cvRepo.findById(record.getCvId()).orElseThrow(CVNotFoundException::new);
             resume.setRelevant(true);
             cvRepo.save(resume);
             notificationRepo.delete(record);
-            System.out.println("CV for " + resume.getPosition() + " confirmed!");
+            return "<p>CV for " + resume.getPosition() + " confirmed!</p>" +
+                    "<p>You may now close this page</p>";
         }
+        return "<p>Wrong token</p>";
     }
-
 }

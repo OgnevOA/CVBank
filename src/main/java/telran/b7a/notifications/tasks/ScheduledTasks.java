@@ -12,6 +12,8 @@ import telran.b7a.notifications.model.NotificationRecord;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Component
 @EnableScheduling
@@ -27,14 +29,23 @@ public class ScheduledTasks {
         this.notifyUser = notifyUser;
     }
 
-//    @Scheduled(cron = "0 * 16 ? * *")
+    //    @Scheduled(cron = "0 0 8 ? * *")
     public void sendNotifications() {
-        List<CV> cvs = cvRepo.findAll();//FIXME
-        for (CV cv : cvs) {
+        Stream<CV> cvs = cvRepo.findBydatePublished(LocalDate.now().minusWeeks(2).format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+        cvs.forEach(cv -> {
             NotificationRecord record = new NotificationRecord(cv.getCvId().toHexString(), LocalDate.now().plusWeeks(1));
             notificationRepo.save(record);
             notifyUserHelper(cv.getEmail(), record.getExpirationDate(), cv.getFirstName(), cv.getLastName(), record.getRecordId().toHexString());
-        }
+        });
+    }
+
+    //    @Scheduled(cron = "0 0 8 ? * *")
+    public void unpublishNotConfirmedCvs() {
+        Stream<NotificationRecord> deletedRecords = notificationRepo.deleteRecordsByExpirationDateBefore(LocalDate.now());
+        List<String> cvIds = deletedRecords.map(r -> r.getCvId()).collect(Collectors.toList());
+        Iterable<CV> cvsToUnpublish = cvRepo.findAllById(cvIds);
+        cvsToUnpublish.forEach(cv -> cv.setPublished(false));
+        cvRepo.saveAll(cvsToUnpublish);
     }
 
     private void notifyUserHelper(String email, LocalDate date, String firstName, String lastName, String recordId) {
