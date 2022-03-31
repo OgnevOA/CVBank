@@ -17,7 +17,7 @@ public class NotificationController {
 	}
 
 	@GetMapping("/{token}")
-	public void confirmUserCV(@PathVariable String token) {
-		notificationService.recieveCVConfirmation(token);
+	public String confirmUserCV(@PathVariable String token) {
+		return notificationService.recieveCVConfirmation(token);
 	}
 }

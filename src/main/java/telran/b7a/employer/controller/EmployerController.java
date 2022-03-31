@@ -9,7 +9,7 @@ import telran.b7a.employer.dto.NewEmployerDto;
 import telran.b7a.employer.dto.UpdateEmployerDto;
 import telran.b7a.employer.service.EmployerService;
 
-import javax.validation.Valid;
+//import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -27,7 +27,7 @@ public class EmployerController {
     }
 
     @PostMapping("/signup")
-    public EmployerDto addEmployer(@RequestBody @Valid NewEmployerDto newEmployer) {
+    public EmployerDto addEmployer(@RequestBody NewEmployerDto newEmployer) {
         return employerService.addEmployer(newEmployer);
     }
 
