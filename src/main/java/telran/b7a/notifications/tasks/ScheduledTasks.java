@@ -31,7 +31,7 @@ public class ScheduledTasks {
 
     //    @Scheduled(cron = "0 0 8 ? * *")
     public void sendNotifications() {
-        Stream<CV> cvs = cvRepo.findBydatePublished(LocalDate.now().minusWeeks(2).format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+        Stream<CV> cvs = cvRepo.findBydatePublished(LocalDate.now());
         cvs.forEach(cv -> {
             NotificationRecord record = new NotificationRecord(cv.getCvId().toHexString(), LocalDate.now().plusWeeks(1));
             notificationRepo.save(record);
