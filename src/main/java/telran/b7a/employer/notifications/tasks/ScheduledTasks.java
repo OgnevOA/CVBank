@@ -1,13 +1,13 @@
-package telran.b7a.notifications.tasks;
+package telran.b7a.employer.notifications.tasks;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Component;
 import telran.b7a.cv.dao.CVRepository;
 import telran.b7a.cv.models.CV;
-import telran.b7a.notifications.dao.NotificationBankMongoRepository;
-import telran.b7a.notifications.interfaces.NotifyUser;
-import telran.b7a.notifications.model.NotificationRecord;
+import telran.b7a.employer.notifications.dao.NotificationBankMongoRepository;
+import telran.b7a.employer.notifications.interfaces.NotifyUser;
+import telran.b7a.employer.notifications.model.NotificationRecord;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
