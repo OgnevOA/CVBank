@@ -39,6 +39,7 @@ public class NotificationServiceImpl implements NotificationService {
         if (record.getExpirationDate().isAfter(LocalDate.now())) {
             CV resume = cvRepo.findById(record.getCvId()).orElseThrow(CVNotFoundException::new);
             resume.setRelevant(true);
+            resume.setDatePublished(LocalDate.now());
             cvRepo.save(resume);
             notificationRepo.delete(record);
             return "<p>CV for " + resume.getPosition() + " confirmed!</p>" +
