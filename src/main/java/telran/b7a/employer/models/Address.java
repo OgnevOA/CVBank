@@ -1,21 +1,19 @@
 package telran.b7a.employer.models;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Address  {
-	
+@Builder
+public class Address {
 
-	String country;
-	String city;
-	String street;
-	Integer building;
-	Integer zip;
+
+    String country;
+    String city;
+    String street;
+    Integer building;
+    Integer zip;
 
 }

@@ -46,9 +46,9 @@ public class AuthConfig {
                     .antMatchers(HttpMethod.POST, "/cvbank/employee/signin")        //Login Employee
                     .authenticated()
                     .antMatchers(HttpMethod.PUT, "/cvbank/employee/login")            //Change Employee Login
-                    .authenticated()
+                    .access("hasRole('EMPLOYEE')")
                     .antMatchers(HttpMethod.PUT, "/cvbank/employee/pass")            //Change Employee Password
-                    .authenticated()
+                    .access("hasRole('EMPLOYEE')")
                     .antMatchers("/cvbank/employee/{id}")                            //Update Employee | Delete Employee | Get Employee
                     .access("#id == authentication.name")
                     //==================EMPLOYER=================

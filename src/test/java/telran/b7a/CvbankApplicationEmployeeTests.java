@@ -31,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @TestMethodOrder(value = MethodOrderer.OrderAnnotation.class)
 @AutoConfigureMockMvc
-class CvbankApplicationTests {
+class CvbankApplicationEmployeeTests {
 
     private static final String BASE_URL_EMPLOYEE = "/cvbank/employee";
     EmployeeAccountServiceImpl employeeService;
@@ -43,7 +43,7 @@ class CvbankApplicationTests {
 
 
     @Autowired
-    public CvbankApplicationTests(EmployeeAccountServiceImpl employeeService, ModelMapper modelMapper, MockMvc mockMvc, EmployeeMongoRepository employeeMongoRepository) {
+    public CvbankApplicationEmployeeTests(EmployeeAccountServiceImpl employeeService, ModelMapper modelMapper, MockMvc mockMvc, EmployeeMongoRepository employeeMongoRepository) {
         this.employeeService = employeeService;
         this.modelMapper = modelMapper;
         this.mockMvc = mockMvc;
@@ -68,9 +68,7 @@ class CvbankApplicationTests {
     public void addEmployee() throws Exception {
         RegisterEmployeeDto newEmployeeDto = modelMapper.map(employee, RegisterEmployeeDto.class);
         assertEquals(employee.getEmail(), employeeService.registerEmployee(newEmployeeDto).getEmail());
-        objectMapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
-        objectWriter = objectMapper.writer().withDefaultPrettyPrinter();
-        String json = objectWriter.writeValueAsString(employee);
+        String json = convertToJson(newEmployeeDto);
         mockMvc.perform(post(BASE_URL_EMPLOYEE + "/signup")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
@@ -80,6 +78,7 @@ class CvbankApplicationTests {
     }
 
     @Test
+    @Order(2)
     @WithMockUser(username = "test", password = "test", roles = "EMPLOYER")
     public void getEmployeeIfEmployer() throws Exception {
         mockMvc.perform(get(BASE_URL_EMPLOYEE + "/green@goblin.com"))
@@ -87,15 +86,17 @@ class CvbankApplicationTests {
     }
 
     @Test
+    @Order(2)
     @WithMockUser(username = "green@goblin.com", password = "123456", roles = "EMPLOYEE")
     public void getEmployeeIfEmployeeOwner() throws Exception {
         mockMvc.perform(get(BASE_URL_EMPLOYEE + "/green@goblin.com"))
-                        .andExpect(status().isOk());
+                .andExpect(status().isOk());
         assertNotNull(employeeService.getEmployee("green@goblin.com"));
         assertEquals("Norman", employeeService.getEmployee("green@goblin.com").getFirstName());
     }
 
     @Test
+    @Order(2)
     @WithMockUser(username = "test", password = "test", roles = "EMPLOYEE")
     public void getEmployeeIfEmployeeNotOwner() throws Exception {
         mockMvc.perform(get(BASE_URL_EMPLOYEE + "/green@goblin.com"))
@@ -103,19 +104,21 @@ class CvbankApplicationTests {
     }
 
     @Test
+    @Order(10)
     @WithMockUser(username = "green@goblin.com", password = "123456", roles = "EMPLOYEE")
     public void updateEmployeeIfEmployeeOwner() throws Exception {
         objectMapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
         objectWriter = objectMapper.writer().withDefaultPrettyPrinter();
         String json = objectWriter.writeValueAsString(updateEmployeeDto);
         mockMvc.perform(put(BASE_URL_EMPLOYEE + "/green@goblin.com")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(json))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
                 .andExpect(status().isOk());
         assertEquals("Harry", employeeService.getEmployee("green@goblin.com").getFirstName());
     }
 
     @Test
+    @Order(10)
     @WithMockUser(username = "test", password = "test", roles = "EMPLOYEE")
     public void updateEmployeeIfEmployeeNotOwner() throws Exception {
         String json = convertToJson(updateEmployeeDto);
@@ -126,6 +129,7 @@ class CvbankApplicationTests {
     }
 
     @Test
+    @Order(10)
     @WithMockUser(username = "test", password = "test", roles = "EMPLOYER")
     public void updateEmployeeIfEmployer() throws Exception {
         String json = convertToJson(updateEmployeeDto);
@@ -135,9 +139,88 @@ class CvbankApplicationTests {
                 .andExpect(status().isForbidden());
     }
 
-    private String convertToJson(UpdateEmployeeDto updateEmployeeDto) throws JsonProcessingException {
+    @Test
+    @Order(11)
+    @WithMockUser(username = "green@goblin.com", password = "123456", roles = "EMPLOYEE")
+    public void changeLoginIfEmployeeOwner() throws Exception {
+        mockMvc.perform(put(BASE_URL_EMPLOYEE + "/login")
+                        .header("X-Login", "miles@spidermail.com"))
+                .andExpect(status().isOk());
+        assertNull(employeeMongoRepository.findById("green@goblin.com").orElse(null));
+        assertNotNull(employeeMongoRepository.findById("miles@spidermail.com").orElse(null));
+    }
+
+    @Test
+    @Order(12)
+    @WithMockUser(username = "test", password = "test", roles = "EMPLOYEE")
+    public void changeLoginIfAnotherEmployee() throws Exception {
+        mockMvc.perform(put(BASE_URL_EMPLOYEE + "/login")
+                        .header("X-Login", "miles@spidermail.com"))
+                .andExpect(status().isConflict());
+    }
+
+    @Test
+    @Order(11)
+    @WithMockUser(username = "test", password = "test", roles = "EMPLOYER")
+    public void changeLoginIfEmployer() throws Exception {
+        mockMvc.perform(put(BASE_URL_EMPLOYEE + "/login")
+                        .header("X-Login", "miles@spidermail.com"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @Order(13)
+    @WithMockUser(username = "miles@spidermail.com", password = "123456", roles = "EMPLOYEE")
+    public void changePasswordIfEmployee() throws Exception {
+        String oldPassword = employeeMongoRepository.findById("miles@spidermail.com").orElse(null).getPassword();
+        mockMvc.perform(put(BASE_URL_EMPLOYEE + "/pass")
+                        .header("X-Password", "0000"))
+                .andExpect(status().isOk());
+        String newPassword = employeeMongoRepository.findById("miles@spidermail.com").orElse(null).getPassword();
+        assertNotEquals(oldPassword, newPassword);
+    }
+
+    @Test
+    @Order(13)
+    @WithMockUser(username = "miles@spidermail.com", password = "0000", roles = "EMPLOYER")
+    public void changePasswordIfEmployer() throws Exception {
+        mockMvc.perform(put(BASE_URL_EMPLOYEE + "/pass")
+                        .header("X-Password", "0000"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @Order(100)
+    @WithMockUser(username = "miles@spidermail.com", password = "123456", roles = "EMPLOYEE")
+    public void deleteEmployeeIfEmployeeOwner() throws Exception {
+        assertNotNull(employeeMongoRepository.findById("miles@spidermail.com"));
+        mockMvc.perform(delete(BASE_URL_EMPLOYEE + "/miles@spidermail.com"))
+                .andExpect(status().isOk());
+        assertNull(employeeMongoRepository.findById("miles@spidermail.com").orElse(null));
+    }
+
+    @Test
+    @Order(101)
+    @WithMockUser(username = "test", password = "test", roles = "EMPLOYEE")
+    public void deleteEmployeeIfEmployeeNotOwner() throws Exception {
+        assertNotNull(employeeMongoRepository.findById("miles@spidermail.com"));
+        mockMvc.perform(delete(BASE_URL_EMPLOYEE + "/miles@spidermail.com"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @Order(102)
+    @WithMockUser(username = "test", password = "test", roles = "EMPLOYER")
+    public void deleteEmployeeIfEmployer() throws Exception {
+        assertNotNull(employeeMongoRepository.findById("miles@spidermail.com"));
+        mockMvc.perform(delete(BASE_URL_EMPLOYEE + "/miles@spidermail.com"))
+                .andExpect(status().isForbidden());
+    }
+
+
+    private String convertToJson(Object objectForConvert) throws JsonProcessingException {
         objectMapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
         objectWriter = objectMapper.writer().withDefaultPrettyPrinter();
-        return objectWriter.writeValueAsString(updateEmployeeDto);
+        return objectWriter.writeValueAsString(objectForConvert);
     }
 }
