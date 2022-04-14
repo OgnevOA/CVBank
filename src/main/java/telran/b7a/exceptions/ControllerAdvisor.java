@@ -6,6 +6,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import telran.b7a.cv.dto.exceptions.WrongCityException;
+import telran.b7a.employee.dto.exceptions.EmployeeAlreadyExistException;
+import telran.b7a.employee.dto.exceptions.EmployeeNotFoundException;
 import telran.b7a.employer.dto.exceptions.EmployerExistException;
 import telran.b7a.employer.dto.exceptions.EmployerNotFoundException;
 import telran.b7a.employer.dto.exceptions.LoginAlreadyUsedException;
@@ -61,4 +63,21 @@ public class ControllerAdvisor {
         body.put("message", "City in field address not exist");
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(EmployeeAlreadyExistException.class)
+    public ResponseEntity<Object> handleEmployeeExistException() {
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("message", "Employee already exist");
+        return new ResponseEntity<>(body, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(EmployeeNotFoundException.class)
+    public ResponseEntity<Object> handleEmployeeNotFoundException() {
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("message", "Employee not found");
+        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+    }
+
 }

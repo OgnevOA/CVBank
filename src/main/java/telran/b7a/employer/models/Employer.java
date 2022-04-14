@@ -14,6 +14,7 @@ import java.util.Map;
 @AllArgsConstructor
 @Document(collection = "Employers")
 @EqualsAndHashCode(of = "email")
+@Builder
 @ToString
 public class Employer {
 
