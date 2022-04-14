@@ -1,4 +1,4 @@
-package telran.b7a.notifications.tasks;
+package telran.b7a.employer.notifications.tasks;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;

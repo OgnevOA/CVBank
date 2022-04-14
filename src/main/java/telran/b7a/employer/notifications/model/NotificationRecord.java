@@ -1,4 +1,4 @@
-package telran.b7a.notifications.model;
+package telran.b7a.employer.notifications.model;
 
 import lombok.Data;
 import org.bson.types.ObjectId;

@@ -38,15 +38,15 @@ public class CVController {
 
     }
 
+    @PostMapping("/cvs/aggregate")
+    public List<CVDto> getCVsByParameters(@RequestBody CVSearchDto paramaters) {
+        return cvService.getCVsByParamaters(paramaters);
+    }
+
     @GetMapping("/{cvId}")
     public CVDto getCV(@PathVariable String cvId, Authentication authentication) {
         String role = authentication.getAuthorities().stream().findFirst().orElse(null).getAuthority();
         return cvService.getCV(cvId, role);
-    }
-
-    @PostMapping("/cvs/aggregate")
-    public List<CVDto> getCVsByParameters(@RequestBody CVSearchDto paramaters) {
-        return cvService.getCVsByParamaters(paramaters);
     }
 
     @GetMapping("/cvs/published")
