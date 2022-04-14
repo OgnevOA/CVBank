@@ -1,4 +1,4 @@
-package telran.b7a.employer.notifications.service;
+package telran.b7a.notifications.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -7,9 +7,9 @@ import telran.b7a.cv.dto.exceptions.CVNotFoundException;
 import telran.b7a.cv.models.CV;
 import telran.b7a.employee.dao.EmployeeMongoRepository;
 import telran.b7a.employee.dto.exceptions.EmployeeNotFoundException;
-import telran.b7a.employer.notifications.dao.NotificationBankMongoRepository;
-import telran.b7a.employer.notifications.interfaces.NotifyUser;
-import telran.b7a.employer.notifications.model.NotificationRecord;
+import telran.b7a.notifications.dao.NotificationBankMongoRepository;
+import telran.b7a.notifications.interfaces.NotifyUser;
+import telran.b7a.notifications.model.NotificationRecord;
 
 import java.time.LocalDate;
 
