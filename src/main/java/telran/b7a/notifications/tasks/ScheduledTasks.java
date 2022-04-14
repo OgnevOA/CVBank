@@ -46,7 +46,7 @@ public class ScheduledTasks {
         });
     }
 
-    @Scheduled(cron = "0 * 21 ? * *")
+//    @Scheduled(cron = "0 * 10 ? * *")
     public void testMail() {
         EmailType data = new NotifyUserEmail(LocalDate.now().plusWeeks(2), "RecordId", "Oleg", "Ognev", "ognevoa94@gmail.com", "Confirm your CV relevance");
         Email email = new Email(data);

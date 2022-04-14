@@ -26,6 +26,7 @@ public class NotifyUserEmail extends EmailType {
 
     }
 
+    @Override
     public Object getBody() {
         return "<h1>Hello "
                 + this.getFirstName() + " " + this.getLastName() +
@@ -37,6 +38,7 @@ public class NotifyUserEmail extends EmailType {
                 "</p>";
     }
 
+    @Override
     public String getType() {
         return "text/html";
     }

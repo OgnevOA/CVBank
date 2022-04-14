@@ -1,5 +1,13 @@
-{"properties": [{
-  "name": "BASE_URL",
-  "type": "java.lang.String",
-  "description": "A description for 'BASE_URL'"
-}]}
+{
+  "properties": [
+    {
+      "name": "BASE_URL",
+      "type": "java.lang.String",
+      "description": "A description for 'BASE_URL'"
+    },
+    {
+      "name": "MAIL_PASS",
+      "type": "java.lang.String",
+      "description": "Description for MAIL_PASS."
+  }
+]}

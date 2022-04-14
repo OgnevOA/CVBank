@@ -12,7 +12,7 @@ import java.util.Properties;
 public class Email {
     EmailType emailInfo;
     @Value("${MAIL_PASS}")
-    String MAIL_PASS;
+    String MAIL_PASS = System.getenv("MAIL_PASS");
     String to;
     String from = "ognevoa94@gmail.com";
     String host = "smtp.gmail.com";
@@ -21,6 +21,7 @@ public class Email {
 
     public Email(EmailType emailInfo) {
         this.emailInfo = emailInfo;
+        System.out.println(MAIL_PASS);
         Properties properties = System.getProperties();
         properties.put("mail.smtp.host", host);
         properties.put("mail.smtp.port", "465");
