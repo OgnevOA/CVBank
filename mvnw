@@ -1,316 +1,86 @@
-#!/bin/sh
-# ----------------------------------------------------------------------------
-# Licensed to the Apache Software Foundation (ASF) under one
-# or more contributor license agreements.  See the NOTICE file
-# distributed with this work for additional information
-# regarding copyright ownership.  The ASF licenses this file
-# to you under the Apache License, Version 2.0 (the
-# "License"); you may not use this file except in compliance
-# with the License.  You may obtain a copy of the License at
-#
-#    https://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing,
-# software distributed under the License is distributed on an
-# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-# KIND, either express or implied.  See the License for the
-# specific language governing permissions and limitations
-# under the License.
-# ----------------------------------------------------------------------------
-
-# ----------------------------------------------------------------------------
-# Maven Start Up Batch script
-#
-# Required ENV vars:
-# ------------------
-#   JAVA_HOME - location of a JDK home dir
-#
-# Optional ENV vars
-# -----------------
-#   M2_HOME - location of maven2's installed home dir
-#   MAVEN_OPTS - parameters passed to the Java VM when running Maven
-#     e.g. to debug Maven itself, use
-#       set MAVEN_OPTS=-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000
-#   MAVEN_SKIP_RC - flag to disable loading of mavenrc files
-# ----------------------------------------------------------------------------
-
-if [ -z "$MAVEN_SKIP_RC" ] ; then
-
-  if [ -f /usr/local/etc/mavenrc ] ; then
-    . /usr/local/etc/mavenrc
-  fi
-
-  if [ -f /etc/mavenrc ] ; then
-    . /etc/mavenrc
-  fi
-
-  if [ -f "$HOME/.mavenrc" ] ; then
-    . "$HOME/.mavenrc"
-  fi
-
-fi
-
-# OS specific support.  $var _must_ be set to either true or false.
-cygwin=false;
-darwin=false;
-mingw=false
-case "`uname`" in
-  CYGWIN*) cygwin=true ;;
-  MINGW*) mingw=true;;
-  Darwin*) darwin=true
-    # Use /usr/libexec/java_home if available, otherwise fall back to /Library/Java/Home
-    # See https://developer.apple.com/library/mac/qa/qa1170/_index.html
-    if [ -z "$JAVA_HOME" ]; then
-      if [ -x "/usr/libexec/java_home" ]; then
-        export JAVA_HOME="`/usr/libexec/java_home`"
-      else
-        export JAVA_HOME="/Library/Java/Home"
-      fi
-    fi
-    ;;
-esac
-
-if [ -z "$JAVA_HOME" ] ; then
-  if [ -r /etc/gentoo-release ] ; then
-    JAVA_HOME=`java-config --jre-home`
-  fi
-fi
-
-if [ -z "$M2_HOME" ] ; then
-  ## resolve links - $0 may be a link to maven's home
-  PRG="$0"
-
-  # need this for relative symlinks
-  while [ -h "$PRG" ] ; do
-    ls=`ls -ld "$PRG"`
-    link=`expr "$ls" : '.*-> \(.*\)$'`
-    if expr "$link" : '/.*' > /dev/null; then
-      PRG="$link"
-    else
-      PRG="`dirname "$PRG"`/$link"
-    fi
-  done
-
-  saveddir=`pwd`
-
-  M2_HOME=`dirname "$PRG"`/..
-
-  # make it fully qualified
-  M2_HOME=`cd "$M2_HOME" && pwd`
-
-  cd "$saveddir"
-  # echo Using m2 at $M2_HOME
-fi
-
-# For Cygwin, ensure paths are in UNIX format before anything is touched
-if $cygwin ; then
-  [ -n "$M2_HOME" ] &&
-    M2_HOME=`cygpath --unix "$M2_HOME"`
-  [ -n "$JAVA_HOME" ] &&
-    JAVA_HOME=`cygpath --unix "$JAVA_HOME"`
-  [ -n "$CLASSPATH" ] &&
-    CLASSPATH=`cygpath --path --unix "$CLASSPATH"`
-fi
-
-# For Mingw, ensure paths are in UNIX format before anything is touched
-if $mingw ; then
-  [ -n "$M2_HOME" ] &&
-    M2_HOME="`(cd "$M2_HOME"; pwd)`"
-  [ -n "$JAVA_HOME" ] &&
-    JAVA_HOME="`(cd "$JAVA_HOME"; pwd)`"
-fi
-
-if [ -z "$JAVA_HOME" ]; then
-  javaExecutable="`which javac`"
-  if [ -n "$javaExecutable" ] && ! [ "`expr \"$javaExecutable\" : '\([^ ]*\)'`" = "no" ]; then
-    # readlink(1) is not available as standard on Solaris 10.
-    readLink=`which readlink`
-    if [ ! `expr "$readLink" : '\([^ ]*\)'` = "no" ]; then
-      if $darwin ; then
-        javaHome="`dirname \"$javaExecutable\"`"
-        javaExecutable="`cd \"$javaHome\" && pwd -P`/javac"
-      else
-        javaExecutable="`readlink -f \"$javaExecutable\"`"
-      fi
-      javaHome="`dirname \"$javaExecutable\"`"
-      javaHome=`expr "$javaHome" : '\(.*\)/bin'`
-      JAVA_HOME="$javaHome"
-      export JAVA_HOME
-    fi
-  fi
-fi
-
-if [ -z "$JAVACMD" ] ; then
-  if [ -n "$JAVA_HOME"  ] ; then
-    if [ -x "$JAVA_HOME/jre/sh/java" ] ; then
-      # IBM's JDK on AIX uses strange locations for the executables
-      JAVACMD="$JAVA_HOME/jre/sh/java"
-    else
-      JAVACMD="$JAVA_HOME/bin/java"
-    fi
-  else
-    JAVACMD="`\\unset -f command; \\command -v java`"
-  fi
-fi
-
-if [ ! -x "$JAVACMD" ] ; then
-  echo "Error: JAVA_HOME is not defined correctly." >&2
-  echo "  We cannot execute $JAVACMD" >&2
-  exit 1
-fi
-
-if [ -z "$JAVA_HOME" ] ; then
-  echo "Warning: JAVA_HOME environment variable is not set."
-fi
-
-CLASSWORLDS_LAUNCHER=org.codehaus.plexus.classworlds.launcher.Launcher
-
-# traverses directory structure from process work directory to filesystem root
-# first directory with .mvn subdirectory is considered project base directory
-find_maven_basedir() {
-
-  if [ -z "$1" ]
-  then
-    echo "Path not specified to find_maven_basedir"
-    return 1
-  fi
-
-  basedir="$1"
-  wdir="$1"
-  while [ "$wdir" != '/' ] ; do
-    if [ -d "$wdir"/.mvn ] ; then
-      basedir=$wdir
-      break
-    fi
-    # workaround for JBEAP-8937 (on Solaris 10/Sparc)
-    if [ -d "${wdir}" ]; then
-      wdir=`cd "$wdir/.."; pwd`
-    fi
-    # end of workaround
-  done
-  echo "${basedir}"
-}
-
-# concatenates all lines of a file
-concat_lines() {
-  if [ -f "$1" ]; then
-    echo "$(tr -s '\n' ' ' < "$1")"
-  fi
-}
-
-BASE_DIR=`find_maven_basedir "$(pwd)"`
-if [ -z "$BASE_DIR" ]; then
-  exit 1;
-fi
-
-##########################################################################################
-# Extension to allow automatically downloading the maven-wrapper.jar from Maven-central
-# This allows using the maven wrapper in projects that prohibit checking in binary data.
-##########################################################################################
-if [ -r "$BASE_DIR/.mvn/wrapper/maven-wrapper.jar" ]; then
-    if [ "$MVNW_VERBOSE" = true ]; then
-      echo "Found .mvn/wrapper/maven-wrapper.jar"
-    fi
-else
-    if [ "$MVNW_VERBOSE" = true ]; then
-      echo "Couldn't find .mvn/wrapper/maven-wrapper.jar, downloading it ..."
-    fi
-    if [ -n "$MVNW_REPOURL" ]; then
-      jarUrl="$MVNW_REPOURL/org/apache/maven/wrapper/maven-wrapper/3.1.0/maven-wrapper-3.1.0.jar"
-    else
-      jarUrl="https://repo.maven.apache.org/maven2/org/apache/maven/wrapper/maven-wrapper/3.1.0/maven-wrapper-3.1.0.jar"
-    fi
-    while IFS="=" read key value; do
-      case "$key" in (wrapperUrl) jarUrl="$value"; break ;;
-      esac
-    done < "$BASE_DIR/.mvn/wrapper/maven-wrapper.properties"
-    if [ "$MVNW_VERBOSE" = true ]; then
-      echo "Downloading from: $jarUrl"
-    fi
-    wrapperJarPath="$BASE_DIR/.mvn/wrapper/maven-wrapper.jar"
-    if $cygwin; then
-      wrapperJarPath=`cygpath --path --windows "$wrapperJarPath"`
-    fi
-
-    if command -v wget > /dev/null; then
-        if [ "$MVNW_VERBOSE" = true ]; then
-          echo "Found wget ... using wget"
-        fi
-        if [ -z "$MVNW_USERNAME" ] || [ -z "$MVNW_PASSWORD" ]; then
-            wget "$jarUrl" -O "$wrapperJarPath" || rm -f "$wrapperJarPath"
-        else
-            wget --http-user=$MVNW_USERNAME --http-password=$MVNW_PASSWORD "$jarUrl" -O "$wrapperJarPath" || rm -f "$wrapperJarPath"
-        fi
-    elif command -v curl > /dev/null; then
-        if [ "$MVNW_VERBOSE" = true ]; then
-          echo "Found curl ... using curl"
-        fi
-        if [ -z "$MVNW_USERNAME" ] || [ -z "$MVNW_PASSWORD" ]; then
-            curl -o "$wrapperJarPath" "$jarUrl" -f
-        else
-            curl --user $MVNW_USERNAME:$MVNW_PASSWORD -o "$wrapperJarPath" "$jarUrl" -f
-        fi
-
-    else
-        if [ "$MVNW_VERBOSE" = true ]; then
-          echo "Falling back to using Java to download"
-        fi
-        javaClass="$BASE_DIR/.mvn/wrapper/MavenWrapperDownloader.java"
-        # For Cygwin, switch paths to Windows format before running javac
-        if $cygwin; then
-          javaClass=`cygpath --path --windows "$javaClass"`
-        fi
-        if [ -e "$javaClass" ]; then
-            if [ ! -e "$BASE_DIR/.mvn/wrapper/MavenWrapperDownloader.class" ]; then
-                if [ "$MVNW_VERBOSE" = true ]; then
-                  echo " - Compiling MavenWrapperDownloader.java ..."
-                fi
-                # Compiling the Java class
-                ("$JAVA_HOME/bin/javac" "$javaClass")
-            fi
-            if [ -e "$BASE_DIR/.mvn/wrapper/MavenWrapperDownloader.class" ]; then
-                # Running the downloader
-                if [ "$MVNW_VERBOSE" = true ]; then
-                  echo " - Running MavenWrapperDownloader.java ..."
-                fi
-                ("$JAVA_HOME/bin/java" -cp .mvn/wrapper MavenWrapperDownloader "$MAVEN_PROJECTBASEDIR")
-            fi
-        fi
-    fi
-fi
-##########################################################################################
-# End of extension
-##########################################################################################
-
-export MAVEN_PROJECTBASEDIR=${MAVEN_BASEDIR:-"$BASE_DIR"}
-if [ "$MVNW_VERBOSE" = true ]; then
-  echo $MAVEN_PROJECTBASEDIR
-fi
-MAVEN_OPTS="$(concat_lines "$MAVEN_PROJECTBASEDIR/.mvn/jvm.config") $MAVEN_OPTS"
-
-# For Cygwin, switch paths to Windows format before running java
-if $cygwin; then
-  [ -n "$M2_HOME" ] &&
-    M2_HOME=`cygpath --path --windows "$M2_HOME"`
-  [ -n "$JAVA_HOME" ] &&
-    JAVA_HOME=`cygpath --path --windows "$JAVA_HOME"`
-  [ -n "$CLASSPATH" ] &&
-    CLASSPATH=`cygpath --path --windows "$CLASSPATH"`
-  [ -n "$MAVEN_PROJECTBASEDIR" ] &&
-    MAVEN_PROJECTBASEDIR=`cygpath --path --windows "$MAVEN_PROJECTBASEDIR"`
-fi
-
-# Provide a "standardized" way to retrieve the CLI args that will
-# work with both Windows and non-Windows executions.
-MAVEN_CMD_LINE_ARGS="$MAVEN_CONFIG $@"
-export MAVEN_CMD_LINE_ARGS
-
-WRAPPER_LAUNCHER=org.apache.maven.wrapper.MavenWrapperMain
-
-exec "$JAVACMD" \
-  $MAVEN_OPTS \
-  $MAVEN_DEBUG_OPTS \
-  -classpath "$MAVEN_PROJECTBASEDIR/.mvn/wrapper/maven-wrapper.jar" \
-  "-Dmaven.home=${M2_HOME}" \
-  "-Dmaven.multiModuleProjectDirectory=${MAVEN_PROJECTBASEDIR}" \
-  ${WRAPPER_LAUNCHER} $MAVEN_CONFIG "$@"
+[
+    {
+        "CODE": "0xB2BF9C",
+        "Description": "Power: On, Mode: 3 (Heat), Fan: 5 (Auto), Temp: 27C, Zone Follow: Off, Sensor Temp: Off",
+        "RAW_TIMING": [4364, 4368,  536, 1606,  532, 536,  614, 1526,  584, 1554,  588, 482,  534, 508,  586, 1578,  564, 506,  558, 482,  560, 1580,  584, 508,  534, 536,  534, 1604,  532, 1606,  560, 508,  534, 1606,  558, 1580,  508, 560,  560, 1554,  588, 1578,  534, 1580,  532, 1630,  558, 1580,  534, 1580,  610, 482,  562, 1552,  558, 536,  558, 486,  582, 488,  580, 510,  532, 536,  560, 482,  558, 1604,  560, 510,  532, 536,  560, 1552,  560, 1604,  560, 1554,  584, 510,  558, 484,  588, 506,  586, 1552,  560, 1578,  560, 508,  560, 508,  586, 482,  560, 1580,  532, 1606,  558, 5156,  4366, 4370,  562, 1576,  586, 460,  584, 1580,  534, 1582,  556, 536,  558, 512,  584, 1552,  534, 532,  560, 508,  560, 1552,  562, 534,  532, 538,  532, 1604,  560, 1580,  534, 510,  556, 1606,  558, 1580,  558, 510,  532, 1604,  562, 1578,  560, 1580,  534, 1578,  610, 1556,  608, 1530,  558, 508,  560, 1580,  558, 510,  534, 536,  558, 510,  532, 536,  588, 478,  534, 536,  556, 1582,  532, 536,  558, 510,  562, 1578,  556, 1582,  558, 1554,  584, 510,  532, 536,  558, 486,  558, 1584,  554, 1608,  530, 538,  558, 508,  532, 512,  584, 1580,  558, 1580,  582],
+        "BASE_64_CODE": "DboRuhFJAhsGSQLrAUkCQAdAA0ALQAPgEwvAG0AHQAPAL0AL4AcDwBtAB+ALA0AvwBdAC8ADwBNAB+ATEwG6EUABAUkCQCPgCyvAF8AbQAdAA0AXQAPgDwtAG+ADA8AnQAfgCwMHGwbrAesBSQJAAwEbBuABA0APwAPAF8APC+sBSQIbBkkCGwZJAg=="
+    },
+    {
+        "CODE": "0xB2BF8C",
+        "Description": "Power: On, Mode: 3 (Heat), Fan: 5 (Auto), Temp: 28C, Zone Follow: Off, Sensor Temp: Off",
+        "RAW_TIMING": [4388, 4346,  558, 1580,  558, 488,  556, 1582,  612, 1554,  530, 512,  634, 460,  532, 1606,  558, 486,  608, 486,  558, 1580,  558, 510,  532, 510,  638, 1524,  532, 1606,  536, 536,  558, 1580,  534, 1604,  562, 508,  532, 1604,  560, 1580,  560, 1578,  558, 1580,  534, 1606,  584, 1554,  532, 538,  558, 1580,  558, 512,  528, 540,  532, 536,  532, 536,  558, 510,  558, 512,  582, 1556,  532, 536,  556, 512,  558, 510,  584, 1554,  532, 1608,  534, 510,  580, 488,  580, 512,  556, 1580,  582, 1556,  530, 1584,  584, 510,  532, 536,  558, 1582,  532, 1606,  530, 5158,  4418, 4344,  506, 1634,  506, 562,  530, 1608,  532, 1606,  558, 512,  530, 538,  556, 1558,  584, 486,  584, 510,  504, 1608,  558, 536,  558, 486,  558, 1606,  532, 1580,  608, 486,  530, 1610,  530, 1608,  530, 540,  554, 1584,  530, 1582,  558, 1606,  530, 1608,  558, 1582,  558, 1580,  532, 536,  532, 1606,  532, 538,  528, 536,  558, 486,  556, 536,  586, 482,  532, 538,  532, 1606,  558, 512,  530, 536,  532, 538,  530, 1606,  530, 1608,  558, 510,  558, 512,  532, 536,  532, 1580,  556, 1606,  508, 1634,  504, 562,  532, 538,  532, 1606,  506, 1634,  556],
+        "BASE_64_CODE": "DbgRuBFHAiAGRwLvAUcCQAdAA0ALQAPgEwvAG0AHQAPAL0AL4AcDwBtAB+ALA0Av4AMXQA9AA+ALE+ADF0ALQAMBuBFAAQFHAkALQDNAB0ADQAtAA+ATC8AbQAdAA8AvQAvgBwPAG0AH4AsDQC/gAxdADwcgBu8B7wFHAoADB+8BIAZHAiAGgAcB7wGAAwcgBkcCIAZHAg=="
+    },
+    {
+        "CODE": "0xB2BFAC",
+        "Description": "Power: On, Mode: 3 (Heat), Fan: 5 (Auto), Temp: 29C, Zone Follow: Off, Sensor Temp: Off",
+        "RAW_TIMING": [4362, 4372,  560, 1580,  558, 484,  608, 1526,  560, 1608,  586, 452,  562, 534,  588, 1528,  608, 486,  558, 510,  532, 1606,  558, 510,  612, 456,  558, 1582,  532, 1606,  562, 480,  558, 1608,  660, 1474,  562, 510,  532, 1608,  534, 1606,  530, 1582,  558, 1608,  530, 1550,  616, 1582,  532, 510,  584, 1582,  560, 512,  532, 510,  558, 536,  558, 510,  532, 512,  582, 484,  560, 1606,  586, 456,  560, 1606,  532, 536,  532, 1584,  584, 1580,  558, 484,  534, 560,  532, 536,  558, 1582,  558, 512,  530, 1608,  558, 484,  558, 536,  532, 1608,  556, 1582,  558, 5158,  4392, 4346,  558, 1580,  532, 540,  530, 1608,  530, 1584,  582, 510,  558, 510,  584, 1530,  556, 538,  506, 562,  560, 1580,  532, 536,  506, 536,  558, 1608,  504, 1634,  608, 460,  532, 1606,  532, 1580,  584, 512,  532, 1606,  530, 1608,  560, 1582,  530, 1606,  532, 1608,  530, 1582,  586, 510,  558, 1580,  534, 514,  554, 538,  530, 510,  586, 510,  556, 512,  530, 514,  554, 1606,  534, 536,  556, 1558,  554, 536,  558, 1582,  558, 1578,  532, 538,  532, 540,  504, 562,  532, 1606,  532, 536,  534, 1606,  532, 512,  582, 514,  530, 1606,  530, 1608,  558],
+        "BASE_64_CODE": "DbgRuBFIAh0GSALsAUgCQAdAAwHsAUABAUgCgAsBSAJAA+AHC8APQAdAA8AjQAvgBwPAG0AH4AsDQC9AF+ADB8ALQBdAA8APwAfAE0APAbgRQAEBSAJAC+ADF0ALQAPAF+ALC8AbQAdAA8AjQAvgBwPAG0AH4AsDQC9AF+ADB8ALQBdAA8APwAcL7AFIAh0GSAIdBkgC"
+    },
+    {
+        "CODE": "0xB2BFBC",
+        "Description": "Power: On, Mode: 3 (Heat), Fan: 5 (Auto), Temp: 30C, Zone Follow: Off, Sensor Temp: Off",
+        "RAW_TIMING": [4438, 4320,  536, 1576,  616, 452,  590, 1550,  588, 1582,  582, 486,  558, 512,  586, 1552,  534, 536,  532, 536,  588, 1554,  558, 508,  536, 534,  558, 1580,  612, 1526,  534, 536,  584, 1554,  560, 1578,  532, 512,  612, 1552,  586, 1554,  586, 1552,  532, 1578,  612, 1532,  608, 1526,  560, 510,  586, 1552,  614, 482,  534, 534,  588, 456,  584, 484,  612, 482,  560, 510,  534, 1606,  558, 510,  532, 1606,  558, 1582,  532, 1604,  586, 1554,  584, 488,  556, 508,  536, 536,  556, 1580,  532, 536,  584, 484,  534, 536,  558, 512,  530, 1608,  532, 1580,  586, 5156,  4392, 4346,  534, 1606,  584, 458,  588, 1580,  558, 1580,  558, 484,  560, 510,  610, 1554,  530, 538,  532, 536,  532, 1606,  558, 512,  534, 508,  584, 1580,  530, 1608,  534, 508,  584, 1556,  558, 1608,  558, 510,  560, 1580,  534, 1606,  532, 1606,  532, 1608,  558, 1580,  586, 1554,  532, 510,  584, 1580,  558, 510,  532, 536,  560, 510,  556, 510,  588, 484,  558, 482,  558, 1578,  562, 536,  532, 1606,  532, 1608,  532, 1606,  532, 1606,  558, 510,  560, 510,  534, 534,  508, 1632,  534, 536,  532, 536,  532, 536,  532, 536,  532, 1606,  532, 1608,  558],
+        "BASE_64_CODE": "DcURxRFIAh4GSALsAUgCQAdAA0ALQAPgEwvAG0AHQAPAL0AL4AcDwBtAB+ALA0AvQBdAB+ADAwHsAUABQAcBSAJAF0AH4AMDQBNAAwHFEUABAUgCQAtAH0AHQANAC0AD4BMLwBtAB0ADwC9AC+AHA8AbQAfgCwNAL0AXQAfgAwNAE8ADQBfAC8AHBx4GSAIeBkgC"
+    },
+    {
+        "CODE": "0xB2BFDC",
+        "Description": "Power: On, Mode: 3 (Heat), Fan: 5 (Auto), Temp: 26C, Zone Follow: Off, Sensor Temp: Off",
+        "RAW_TIMING": [4360, 4376,  530, 1606,  532, 534,  534, 1608,  532, 1608,  532, 510,  558, 538,  530, 1606,  510, 560,  510, 528,  562, 1606,  534, 534,  510, 562,  508, 1628,  534, 1580,  536, 532,  560, 1604,  512, 1630,  508, 558,  534, 1608,  508, 1626,  514, 1628,  514, 1628,  510, 1628,  510, 1630,  512, 558,  512, 1626,  512, 528,  540, 558,  510, 558,  510, 562,  508, 558,  510, 532,  540, 1628,  512, 1626,  512, 586,  482, 1630,  510, 1604,  534, 1630,  510, 558,  512, 558,  508, 558,  510, 558,  512, 1630,  508, 560,  510, 532,  536, 558,  510, 1626,  512, 1602,  538, 5206,  4344, 4396,  512, 1628,  508, 560,  508, 1630,  510, 1606,  534, 560,  508, 560,  510, 1628,  510, 558,  510, 558,  510, 1630,  508, 560,  510, 558,  510, 1630,  508, 1630,  510, 560,  510, 1628,  510, 1630,  510, 558,  510, 1630,  508, 1632,  510, 1602,  536, 1630,  508, 1630,  510, 1628,  510, 560,  510, 1628,  510, 560,  510, 556,  536, 534,  510, 558,  536, 532,  512, 558,  510, 1628,  510, 1630,  510, 558,  512, 1626,  536, 1606,  508, 1630,  508, 558,  510, 560,  508, 560,  508, 558,  510, 1628,  512, 558,  510, 558,  508, 560,  508, 1630,  510, 1630,  510],
+        "BASE_64_CODE": "DcQRxBFHAhsGRwLyAUcCQAdAA0ALQAPgEwvAG0AHQAPAL0AL4AcDwBtABwHyAUABQAfgAQPAL0ATwAtAB0AP4AMD4AcTQA9AAwHEEUABAUcCQAtAL0AHBxsG8gHyAUcCQAMDGwZHAkAHQAPgBwvAD0AHQAPAI0AL4AEDCfIBGwZHAvIBRwLAB0AL4AcDQBtAA0AXQAfAA0AP4AMDQBfgBw8DGwZHAg=="
+    },
+    {
+        "CODE": "0xB2BFCC",
+        "Description": "Power: On, Mode: 3 (Heat), Fan: 5 (Auto), Temp: 25C, Zone Follow: Off, Sensor Temp: Off",
+        "RAW_TIMING": [4340, 4398,  506, 1602,  536, 564,  508, 1630,  508, 1606,  536, 560,  508, 524,  546, 1630,  508, 560,  508, 560,  510, 1630,  508, 562,  510, 562,  508, 1602,  536, 1632,  508, 560,  510, 1606,  586, 1552,  534, 532,  538, 1598,  540, 1630,  510, 1628,  512, 1604,  534, 1630,  510, 1630,  510, 558,  534, 1606,  510, 558,  510, 536,  536, 558,  508, 534,  534, 560,  508, 560,  510, 1628,  510, 1606,  534, 534,  536, 562,  532, 1606,  534, 1578,  560, 534,  536, 532,  510, 558,  536, 536,  508, 1602,  540, 1628,  510, 562,  508, 560,  508, 1606,  534, 1632,  508, 5182,  4394, 4370,  508, 1606,  536, 560,  508, 1630,  510, 1630,  536, 532,  562, 478,  564, 1604,  534, 536,  532, 536,  534, 1606,  510, 558,  534, 534,  510, 1630,  534, 1606,  534, 532,  536, 1604,  534, 1604,  534, 510,  614, 1552,  590, 1522,  564, 1602,  588, 1552,  588, 1554,  508, 1630,  588, 482,  536, 1574,  614, 458,  560, 510,  558, 508,  590, 506,  536, 534,  586, 456,  560, 1604,  534, 1606,  562, 506,  586, 482,  560, 1582,  534, 1604,  562, 510,  558, 508,  562, 508,  590, 478,  536, 1606,  508, 1630,  534, 510,  590, 506,  560, 1578,  588, 1550,  536],
+        "BASE_64_CODE": "CqkRqRE7Ah0GXgI7IAEBHQaAAwHnAUADAV4CQA9ABwA7IAFAC0ABBucBOwIdBl4gAwM7AucBgAeAC0AH4AEPAR0GwAMBXgLAG0AHwANAAcALAR0GQAPgAR8BHQaAAwHnAeABE0AL4AEXQA8AO6APA14CqRFAAUAPAV4C4AEXADtgC8APAecB4AEbQAED5wE7AkAjQAMD5wFeAkAHQAMD5wE7AkAH4AEDwBsBXgKAGwJeAjsgAQLnAV4gAwE7AkABQAdAAwEdBkADgBfgAQ9AC+ABEwM7Al4CQBNAAwHnAYADBx0GOwIdBl4C"
+    },
+    {
+        "CODE": "0xB2BF4C",
+        "Description": "Power: On, Mode: 3 (Heat), Fan: 5 (Auto), Temp: 24C, Zone Follow: Off, Sensor Temp: Off",
+        "RAW_TIMING": [4392, 4346,  534, 1606,  536, 508,  562, 1602,  586, 1554,  558, 510,  562, 482,  558, 1608,  532, 538,  562, 506,  532, 1582,  558, 538,  560, 508,  532, 1606,  562, 1578,  560, 510,  534, 1604,  536, 1606,  532, 536,  558, 1554,  588, 1578,  532, 1606,  558, 1582,  534, 1606,  586, 1554,  586, 486,  556, 1554,  612, 482,  612, 458,  558, 484,  586, 508,  534, 534,  534, 534,  560, 482,  588, 1580,  558, 510,  586, 454,  588, 1580,  532, 1606,  586, 484,  586, 482,  562, 1558,  580, 484,  584, 1552,  614, 1552,  586, 484,  586, 482,  586, 1554,  586, 1556,  530, 5184,  4368, 4372,  560, 1582,  558, 510,  534, 1606,  586, 1552,  560, 510,  534, 512,  554, 1608,  558, 508,  560, 510,  558, 1584,  530, 540,  558, 484,  610, 1554,  508, 1630,  536, 536,  556, 1582,  534, 1606,  584, 482,  534, 1606,  558, 1582,  558, 1580,  532, 1608,  558, 1580,  534, 1606,  584, 486,  532, 1606,  560, 510,  556, 512,  558, 510,  534, 536,  532, 538,  530, 510,  558, 536,  532, 1610,  532, 536,  558, 510,  532, 1606,  532, 1608,  560, 510,  584, 486,  532, 1608,  534, 536,  532, 1610,  554, 1558,  558, 506,  560, 516,  580, 1582,  532, 1606,  560],
+        "BASE_64_CODE": "DbQRtBFKAhoGSgLwAUoCQAdAA0ALQAPgEwvAG0AHQAPAL0ALBRoG8AEaBkAHgAMD8AFKAkALQAfgDwPgAx9AC0ADwCvAC0AHQAPgAxdADwG0EUABAUoCQAtAG0AHQANAC0AD4BMLwBtAB0ADwC9ACwUaBvABGgZAB4ADA/AB8AFACwHwAeARA+ADH0ALQAPAL8ALQAdAA+ADFwMaBkoC"
+    },
+    {
+        "CODE": "0xB2BF5C",
+        "Description": "Power: On, Mode: 3 (Heat), Fan: 5 (Auto), Temp: 23C, Zone Follow: Off, Sensor Temp: Off",
+        "RAW_TIMING": [4342, 4396,  510, 1628,  510, 560,  508, 1630,  510, 1630,  510, 532,  538, 560,  512, 1626,  510, 560,  508, 534,  536, 1630,  510, 532,  536, 560,  510, 1630,  510, 1604,  534, 558,  510, 1608,  532, 1630,  508, 560,  508, 1630,  512, 1630,  506, 1632,  510, 1632,  508, 1634,  506, 1632,  506, 534,  560, 1580,  586, 482,  536, 558,  510, 534,  558, 536,  532, 536,  510, 532,  536, 558,  532, 1606,  534, 536,  562, 1578,  508, 1606,  534, 1630,  510, 536,  558, 536,  508, 1630,  532, 536,  510, 1632,  532, 536,  508, 560,  532, 536,  510, 1602,  536, 1630,  508, 5208,  4344, 4398,  532, 1606,  536, 506,  536, 1604,  558, 1606,  534, 534,  536, 536,  534, 1604,  534, 536,  530, 536,  534, 1606,  536, 534,  536, 532,  588, 1554,  584, 1554,  534, 534,  536, 1606,  508, 1634,  532, 534,  586, 1554,  612, 1524,  536, 1604,  586, 1554,  510, 1630,  534, 1606,  536, 508,  612, 1554,  532, 506,  564, 506,  564, 532,  534, 510,  586, 508,  562, 506,  536, 536,  558, 1578,  536, 536,  534, 1606,  584, 1552,  536, 1576,  560, 508,  562, 534,  562, 1576,  536, 536,  534, 1604,  534, 506,  588, 508,  588, 458,  584, 1580,  560, 1580,  536],
+        "BASE_64_CODE": "DckRyRFJAhkGSQLyAUkCQAdAA0ALQAPgEwvAG0AHQAPAL0AL4AcDwBtAB+APA0AzQBtAB8ADQA9AA0AP4AMHQAtAA0AXQAMByRFAAQFJAkAL4AMXQAtAA8AX4AsLwBsLGQbyARkGSQLyAfIBQAfgCwMD8gFJAkAXQAcB8gFAAUAH4AUDBRkG8gHyAUAH4AEDQA9AA0AT4AMHQAsL8gFJAhkGSQIZBkkC"
+    },
+    {
+        "CODE": "0xB26BE0",
+        "Description": "Power: On, Swing: Toggle",
+        "RAW_TIMING": [4364, 4346,  536, 1630,  510, 560,  510, 1632,  506, 1606,  536, 558,  510, 560,  508, 1606,  536, 528,  540, 536,  534, 1630,  508, 560,  510, 558,  510, 1606,  558, 1606,  534, 536,  508, 1630,  510, 560,  536, 1606,  510, 1632,  532, 510,  532, 1630,  510, 562,  532, 1582,  532, 1632,  506, 1630,  534, 536,  508, 560,  510, 1630,  534, 510,  558, 1604,  536, 534,  510, 560,  508, 1632,  510, 1630,  508, 1630,  512, 558,  588, 482,  510, 560,  508, 560,  534, 536,  508, 560,  536, 534,  510, 562,  532, 1606,  534, 1608,  508, 1608,  556, 1578,  536, 1632,  532, 5184,  4344, 4396,  534, 1608,  532, 540,  530, 1608,  508, 1630,  508, 534,  536, 560,  508, 1630,  586, 456,  538, 558,  510, 1628,  534, 536,  508, 560,  534, 1604,  534, 1608,  508, 534,  560, 1604,  536, 536,  532, 1606,  534, 1606,  534, 512,  558, 1604,  512, 532,  614, 1552,  532, 1606,  536, 1604,  532, 536,  562, 508,  534, 1608,  532, 538,  532, 1604,  536, 536,  508, 560,  560, 1554,  560, 1606,  534, 1606,  534, 536,  536, 532,  562, 508,  532, 538,  558, 508,  560, 508,  560, 510,  534, 536,  532, 1606,  536, 1604,  560, 1578,  562, 1580,  532, 1606,  534],
+        "BASE_64_CODE": "DcURxRFFAiAGRQLtAUUCQAdAA0ALQAPgEwvAG+ADB+ADC8A/QBNAA0APQAPAC8AHwBNAD0ADQA/gEwNAI+AHAwHFEUABAUUCQBdAO0AHQANAC0AD4BMLwBvgAwfgAwvAP0ATQANAD0ADwAvAB8ATQA9AA0AP4BMDQCPgBAMCBkUC"
+    },
+    {
+        "CODE": "0xB2BF50",
+        "Description": "Power: On, Mode: 0 (Cool), Fan: 5 (Auto), Temp: 23C, Zone Follow: Off, Sensor Temp: Off",
+        "RAW_TIMING": [4418, 4322,  558, 1554,  558, 536,  560, 1580,  532, 1608,  532, 534,  560, 512,  558, 1580,  532, 538,  532, 536,  558, 1556,  584, 512,  532, 536,  558, 1580,  532, 1580,  586, 510,  534, 1608,  532, 1608,  558, 512,  530, 1580,  586, 1582,  558, 1556,  532, 1634,  508, 1632,  532, 1608,  530, 538,  584, 1556,  506, 562,  530, 540,  506, 538,  582, 510,  532, 538,  558, 510,  560, 508,  536, 1606,  556, 512,  532, 1608,  534, 536,  506, 564,  532, 514,  554, 540,  528, 1610,  532, 536,  558, 1584,  532, 514,  580, 1556,  582, 1582,  558, 1558,  554, 1610,  558, 5160,  4370, 4372,  532, 1608,  534, 536,  532, 1608,  556, 1582,  558, 510,  532, 538,  530, 1608,  532, 536,  534, 508,  558, 1608,  532, 536,  532, 538,  530, 1608,  532, 1606,  534, 538,  558, 1580,  558, 1582,  530, 538,  532, 1608,  530, 1610,  532, 1608,  530, 1608,  558, 1580,  532, 1610,  558, 510,  532, 1608,  558, 484,  558, 536,  558, 486,  558, 536,  530, 540,  558, 510,  530, 538,  534, 1608,  530, 542,  498, 1636,  582, 462,  554, 514,  528, 564,  534, 536,  532, 1580,  558, 538,  530, 1586,  556, 536,  558, 1584,  556, 1582,  506, 1634,  532, 1608,  532],
+        "BASE_64_CODE": "DcMRwxFJAh0GSQLxAUkCQAdAA0ALQAPgEwvAG0AHQAPAL0AL4AcDwBtABwHxAUABQAfgBQNAM0ATBx0G8QHxAUkC4AMDAx0GSQJAD4AHAfEBQAfgAwMBwxFAAQFJAkATA/EBSQJAB0ADQAtAAwcdBvEB8QFJAkADAx0GSQJAB0ADQAtAA+APC0Ab4AMDwCdAB+AJA0ABAUkCQC/gAwdAC8AD4AcbQA8LHQZJAh0GSQIdBkkC"
+    },
+    {
+        "CODE": "0xB2BF70",
+        "Description": "Power: On, Mode: 0 (Cool), Fan: 5 (Auto), Temp: 22C, Zone Follow: Off, Sensor Temp: Off",
+        "RAW_TIMING": [4340, 4396,  536, 1606,  508, 560,  558, 1582,  532, 1606,  508, 536,  638, 432,  556, 1608,  532, 536,  532, 512,  636, 1504,  532, 536,  636, 430,  560, 1606,  588, 1552,  510, 558,  536, 1604,  560, 1580,  586, 484,  534, 1604,  562, 1576,  536, 1606,  510, 1606,  584, 1580,  534, 1608,  558, 510,  536, 1604,  560, 482,  536, 562,  534, 536,  558, 514,  558, 512,  532, 534,  534, 536,  586, 1556,  530, 1578,  562, 1608,  532, 508,  640, 456,  534, 536,  562, 482,  582, 1584,  532, 536,  558, 510,  534, 510,  562, 1606,  530, 1606,  562, 1580,  532, 1608,  508, 5208,  4370, 4342,  560, 1610,  532, 536,  532, 1606,  534, 1606,  560, 508,  534, 536,  560, 1552,  560, 512,  584, 508,  588, 1554,  534, 536,  532, 536,  586, 1528,  562, 1604,  590, 480,  534, 1606,  536, 1578,  560, 536,  560, 1580,  560, 1580,  558, 1580,  586, 1554,  586, 1552,  558, 1580,  534, 536,  532, 1606,  562, 510,  532, 536,  560, 484,  558, 536,  560, 510,  532, 538,  556, 512,  532, 1606,  536, 1604,  584, 1554,  562, 484,  610, 484,  558, 512,  556, 508,  534, 1608,  562, 482,  584, 510,  534, 534,  560, 1582,  558, 1580,  536, 1606,  586, 1554,  534],
+        "BASE_64_CODE": "DbgRuBFHAiIGRwLrAUcCQAdAA0ALQAPgEwuAGwHrAUAHQAMD6wFHAkAH4AsDwBtAB+APA+ADN+AHI0Ab4AMTQA/gAwMBuBFAAQFHAkATQCdAB0ADQAtAA+ATC8AbQAdAA8AvQAvgBwPAG0AH4A8D4AMz4AcjQBvgAxNADwsiBkcCIgZHAiIGRwI="
+    },
+    {
+        "CODE": "0xB2BF60",
+        "Description": "Power: On, Mode: 0 (Cool), Fan: 5 (Auto), Temp: 21C, Zone Follow: Off, Sensor Temp: Off",
+        "RAW_TIMING": [4372, 4394,  534, 1608,  508, 560,  588, 1552,  534, 1606,  560, 508,  534, 536,  532, 1606,  534, 510,  586, 510,  532, 1582,  558, 514,  584, 508,  510, 1630,  534, 1606,  534, 536,  532, 1606,  534, 1606,  536, 534,  508, 1606,  534, 1632,  558, 1582,  508, 1608,  558, 1606,  532, 1608,  560, 482,  562, 1580,  558, 536,  532, 536,  584, 460,  586, 506,  560, 484,  558, 538,  558, 510,  532, 1606,  562, 1580,  558, 510,  532, 536,  510, 560,  562, 508,  534, 536,  558, 1580,  534, 510,  558, 536,  560, 1580,  588, 1552,  562, 1578,  560, 1554,  586, 1580,  560, 5156,  4370, 4372,  562, 1578,  558, 510,  534, 1606,  586, 1552,  532, 512,  586, 510,  534, 1604,  534, 510,  588, 508,  562, 1578,  534, 534,  560, 482,  586, 1578,  560, 1558,  558, 536,  558, 1580,  560, 1580,  534, 536,  560, 1580,  562, 1578,  560, 1580,  560, 1580,  562, 1580,  560, 1578,  562, 506,  562, 1578,  560, 510,  560, 508,  534, 536,  558, 510,  532, 536,  558, 510,  532, 536,  560, 1582,  532, 1606,  560, 510,  530, 538,  560, 484,  558, 536,  560, 508,  560, 1580,  560, 510,  558, 512,  558, 1584,  586, 1552,  534, 1606,  532, 1580,  588, 1580,  558],
+        "BASE_64_CODE": "DbgRuBFIAh8GSALrAUgCQAdAA0ALQAPgEwvAG0AHQAPAL0AL4AcDwBtAB+APA8Az4AsfQBvAF0AL4AcDAbgRQAEBSAJAF0AnQAdAA0ALA+sB6wHgAQsBSALgBwvAD0AHQAPAI0AL4AcDwBtAB+APA8Az4AsfQBvAF0AL4AQDAgZIAg=="
+    },
+    {
+        "CODE": "0xB2BF20",
+        "Description": "Power: On, Mode: 0 (Cool), Fan: 5 (Auto), Temp: 20C, Zone Follow: Off, Sensor Temp: Off",
+        "RAW_TIMING": [4368, 4398,  506, 1630,  536, 536,  532, 1608,  556, 1552,  538, 532,  588, 484,  558, 1608,  508, 534,  560, 536,  506, 1632,  534, 534,  586, 484,  532, 1606,  534, 1606,  532, 536,  534, 1580,  612, 1554,  532, 536,  506, 1636,  554, 1582,  556, 1556,  612, 1528,  584, 1580,  534, 1606,  532, 536,  560, 1580,  534, 536,  532, 536,  534, 536,  508, 564,  530, 538,  584, 484,  558, 510,  560, 510,  560, 1580,  532, 536,  558, 510,  532, 536,  558, 510,  532, 536,  560, 1582,  556, 1582,  586, 482,  612, 1528,  534, 1608,  560, 1578,  534, 1608,  532, 1606,  532, 5184,  4370, 4374,  534, 1580,  610, 460,  558, 1608,  558, 1580,  586, 482,  558, 484,  586, 1580,  558, 510,  534, 536,  532, 1608,  558, 512,  532, 536,  558, 1580,  534, 1608,  612, 432,  586, 1578,  586, 1552,  558, 510,  562, 1578,  560, 1582,  556, 1580,  586, 1554,  558, 1580,  558, 1580,  558, 512,  532, 1608,  532, 536,  560, 512,  532, 538,  558, 510,  532, 534,  534, 538,  532, 536,  558, 510,  558, 1582,  532, 536,  532, 536,  558, 510,  560, 510,  532, 538,  558, 1580,  532, 1606,  560, 482,  586, 1580,  558, 1580,  532, 1608,  532, 1582,  610, 1554,  584],
+        "BASE_64_CODE": "DbYRthFHAh0GRwLvAUcCQAdAA0ALQAPgEwvAG0AHQAMD7wHvAUAH4AsDA+8BRwJAF0AH4BMD4A8jQBdAA0A7QAfgBwMBthFAAQFHAkAX4AMjQAtAA8AX4AsLwBtAB0ADwCNAC+AHA8AbQAfgEwNAN+ALH0AXQANAG0AH4AQDAgZHAg=="
+    },
+    {
+        "CODE": "0xB27BE0",
+        "Description": "Power: Off",
+        "RAW_TIMING": [4364, 4372,  530, 1610,  558, 510,  584, 1532,  556, 1608,  558, 510,  558, 512,  556, 1582,  558, 486,  608, 488,  554, 1582,  580, 464,  608, 460,  554, 1610,  610, 1532,  532, 536,  532, 1608,  584, 458,  584, 1554,  586, 1558,  582, 1558,  556, 1608,  558, 514,  554, 1584,  556, 1584,  528, 1610,  558, 512,  556, 514,  556, 512,  530, 540,  530, 1608,  532, 536,  558, 512,  530, 1610,  530, 1612,  530, 1610,  556, 512,  584, 456,  560, 514,  608, 456,  558, 538,  528, 516,  554, 514,  580, 488,  584, 1558,  580, 1584,  528, 1608,  558, 1582,  558, 1584,  504, 5212,  4366, 4374,  558, 1582,  530, 538,  530, 1610,  556, 1584,  554, 514,  556, 512,  532, 1606,  558, 514,  580, 488,  558, 1580,  558, 512,  556, 514,  530, 1608,  584, 1556,  554, 514,  556, 1582,  532, 538,  530, 1608,  556, 1584,  528, 1610,  530, 1608,  532, 536,  530, 1610,  556, 1560,  580, 1584,  530, 540,  530, 538,  502, 540,  578, 516,  556, 1584,  502, 540,  556, 540,  528, 1612,  530, 1610,  528, 1612,  530, 538,  530, 514,  580, 516,  528, 540,  530, 540,  556, 514,  556, 514,  556, 512,  556, 1558,  554, 1584,  556, 1610,  530, 1610,  530, 1612,  528],
+        "BASE_64_CODE": "DckRyRFHAh8GRwLtAUcCQAdAA0ALQAPgEwvAG+ADB0ALwAPAP+ADD0ATwANAF+ADC0APQAPAE+APB0Aj4AcDAckRQAEBRwJAF0A3QAdAA0ALQAPgDQsB7QFAF0ADA+0BRwLgAwdAC8ADwBvgAw9AE8ADQBfgAwtAD0ADwBMB7QFAAUAH4AUDQCPgBAMCBkcC"
+    }
+]
